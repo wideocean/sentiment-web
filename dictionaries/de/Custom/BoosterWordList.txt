@@ -1,0 +1,42 @@
+absolut	1
+ausgesprochen	1
+außerordentlich	1
+ausserordentlich	1	2015
+besonders	1
+bestimmt	1
+bißchen	-1
+bisschen	-1	2015
+definitiv	1
+echt	1
+einfach	1	2015
+einigermaßen	-1
+einigermassen	-1	2015
+enorm	2
+etwas	-1	2015 z.b.(etwas dreckig, etwas gut, etwas schmuddelig)
+extra	1
+extrem	2
+halbwegs	-1
+insbesondere	1	
+irrsinnig	2
+kaum	-1
+komplett	1
+leicht	-1
+manchmal	-1
+recht	0	#recht umgaenglich ?
+sehr	1
+unbeschreiblich	1	2015
+unglaublich	1
+verdammt	2
+verflixt	1
+voellig	1	2015
+voll	1
+völlig	1
+vollstaendig	1	2015
+vollständig	1
+wahnsinnig	1
+wenig	-1	# wenig gefallen; wenig aufregend
+wirklich	1
+ziemlich	0
+zweifellos	1
+zweifelsfrei	0	??
+zweifelsohne	1

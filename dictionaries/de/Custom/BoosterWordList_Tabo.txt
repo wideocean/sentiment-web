@@ -1,0 +1,42 @@
+absolut	0.5
+ausgesprochen	0.4
+außerordentlich	0.4
+ausserordentlich	0.4	2015
+besonders	0.3
+bestimmt	0.2
+bißchen	-0.5
+bisschen	-0.5	2015
+definitiv	0.2
+echt	0.2
+einfach	0.5	2015
+einigermaßen	-0.3
+einigermassen	-0.3	2015
+enorm	0.4
+etwas	-0.3	2015 z.b.(etwas dreckig, etwas gut, etwas schmuddelig)
+extra	0.3
+extrem	0.4
+halbwegs	-0.3
+insbesondere	0.3	
+irrsinnig	0.4
+kaum	-0.5
+komplett	0.3
+leicht	-0.5
+manchmal	-0.1
+recht	0.2	#recht umgaenglich ?
+sehr	0.2
+unbeschreiblich	0.5	2015
+unglaublich	0.4
+verdammt	0.3
+verflixt	0.3
+voellig	0.2	2015
+voll	0.2
+völlig	0.2
+vollstaendig	0.3	2015
+vollständig	0.3
+wahnsinnig	0.4
+wenig	-0.5	# wenig gefallen; wenig aufregend
+wirklich	0.2
+ziemlich	-0.1
+zweifellos	0.2
+zweifelsfrei	0.2	??
+zweifelsohne	0.2

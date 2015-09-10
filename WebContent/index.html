@@ -1,0 +1,44 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta http-equiv="Content-type" content="text/html;charset=UTF-8">
+<title> Airbnb Sentiment Analysis </title>
+</head>
+<body>
+
+<h2>Sentiment Detection DEMO Request Handling</h2>
+
+
+<h3>Sentiment Servlet</h3>
+<form action="/sentiment-web/detectSentiment" method="post">
+
+<p>Request URL:</p>
+<div>/sentiment-web/detectSentiment?reviewtext=&keywords=false</div>
+<p>true - overall sentiment + all detected sentiment words including their scores</p>
+<p>false - overall sentiment</p>
+DEMO
+<br>
+<textarea rows="10" cols="80" name="reviewtext"></textarea>
+<input type="radio" name="keywords" value="true"> true
+<input type="radio" name="keywords" value="false" checked> false
+<input type="submit" name="submit" value="detectSentiment">
+</form>
+
+
+
+<h2>RecipeServlet</h2>
+<form action="/smart-kitchen-assistant/getAllRecipes?filter=&ingredientsExist=false&amountPortion=0" method="post">
+<input id="submit" type="submit" value="getAllRecipes">
+</form>
+<form action="/smart-kitchen-assistant/getAllRecipes" method="post">
+<input type="text" name="filter" value="filter (optional)">
+<input type="text" name="ingredientsExist" value="ingredientsExist (boolean)">
+<input type="text" name="amountPortion" value="amountPortion">
+<input type="submit" name="submit" value="getAllRecipes">
+</form>
+
+
+
+</body>
+</html>
