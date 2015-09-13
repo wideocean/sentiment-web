@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
@@ -18,6 +19,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 
+import backend.data.SentimentWordScorePair;
+import backend.data.WordScorePair;
 import backend.language.LanguageHandler;
 import backend.sentiment.SentimentHandler;
 import backend.sentiment.SentimentHandlerImpl;
@@ -56,8 +59,10 @@ public class SentimentServlet extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		response.setContentType("text/html");
-		//response.setContentType("application/json");
+		response.setContentType("text/html; charset=UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		request.setCharacterEncoding("UTF-8");
+//		System.out.println(request.getCharacterEncoding());
 		
 		StringBuffer requestURL = request.getRequestURL();
 		
@@ -73,49 +78,105 @@ public class SentimentServlet extends HttpServlet {
 	
 	private void detectSentiment(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
+		
+		
+		
+		System.out.println(request.getQueryString());
+		
+		
+		
+		
+		
+		
+		
+		
 		String multiplereview = request.getParameter("reviewtext");
 		String withKeywords = request.getParameter("keywords");
 		
 		JSONObject json = new JSONObject();
-		if(multiplereview == null || multiplereview.equals("")){
+		if(multiplereview == null || multiplereview.equals("") || 
+			withKeywords == null || withKeywords.equals("")){
 			json.put("statusCode", new Integer(1));
 		}
 		else{
 			json.put("statusCode", new Integer(0));
 			String[] reviews = multiplereview.split("\\n");
-			
-			if(withKeywords != null){
-				int lineNumber = 0;
-				if(withKeywords.equals("false")){
+			int lineNumber = 0;
+			if(withKeywords.equals("false")){
+				
+				JSONArray resultsList = new JSONArray();
+				for(String e: reviews){
+					lineNumber++;
+					String lang = langHandler.detectLanguageFromString(e);
+					String sentiment = sentiHandler.getSentiment(e,lang);
 					
-//					String absoluteDiskPath = getServletContext().getRealPath("");
-//					
-//					LanguageHandler langHandler = new LanguageHandler(absoluteDiskPath);
-//					SentimentHandler sentiHandler = new SentimentHandlerImpl(absoluteDiskPath);
-					
-					
-					JSONArray sentimentList = new JSONArray();
-					for(String e: reviews){
-						lineNumber++;
-						String lang = langHandler.detectLanguageFromString(e);
-						String sentiment = sentiHandler.getSentiment(e,lang);
-						JSONObject jsonobj = new JSONObject();
-						jsonobj.put(lineNumber, sentiment);
-						sentimentList.add(jsonobj);
+					if(sentiment.equals("")){
+						sentiment = "unknown";
 					}
-					json.put("sentiment", sentimentList);
+					if(lang.equals("")){
+						lang = "unknown";
+					}
+					JSONObject jsonobj = new JSONObject();
+					jsonobj.put("sentiment", sentiment);
+					jsonobj.put("lang", lang);
+					
+					JSONObject line = new JSONObject();
+					line.put(lineNumber, jsonobj);
+					resultsList.add(line);
 				}
-				else if(withKeywords.equals("true")){
+				json.put("results", resultsList);
+			}
+			else if(withKeywords.equals("true")){
+				
+				JSONArray resultsList = new JSONArray();
+				for(String e: reviews){
+					lineNumber++;
+					String lang = langHandler.detectLanguageFromString(e);
+					SentimentWordScorePair swsp = sentiHandler.getSentimentWithKeywords(e,lang);
+					
+					String sentiment = swsp.getSentiment();
+					ArrayList<WordScorePair> keywords = swsp.getWordScorePairs();
+					
+					if(sentiment.equals("")){
+						sentiment = "unknown";
+					}
+					if(lang.equals("")){
+						lang = "unknown";
+					}
+					JSONObject jsonobj = new JSONObject();
+					JSONArray wordList = new JSONArray();
+					jsonobj.put("sentiment", sentiment);
+					jsonobj.put("lang", lang);
 					
 					
+					for(WordScorePair wsp: keywords){
+						JSONObject jsonobj2 = new JSONObject();
+						jsonobj2.put("word", wsp.getWord());
+						if(wsp.getScorePair() != null){
+							jsonobj2.put("score", wsp.getScorePair().toString());
+						}
+						else if(wsp.getScore() != 0){
+							jsonobj2.put("score", wsp.getScore());
+						}
+						else if(wsp.getNegation() != null){
+							jsonobj2.put("score", wsp.getNegation());
+						}
+						wordList.add(jsonobj2);
+					}
 					
+					jsonobj.put("keywords", wordList);
 					
+					JSONObject line = new JSONObject();
+					line.put(lineNumber, jsonobj);
+					resultsList.add(line);
 				}
+				json.put("results", resultsList);
 			}
 			
 		}
+		
 		PrintWriter out = response.getWriter();
-		out.println(json.toJSONString());
+		out.println(json);
 		out.flush();
 		
 	}

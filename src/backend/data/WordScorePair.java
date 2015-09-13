@@ -11,7 +11,8 @@ public class WordScorePair {
 		
 	private String word;
 	private Pair scorePair;
-	private float score;
+	private float score = 0;
+	private String negation;
 	
 	public WordScorePair(String word, Pair scorePair){
 		this.word=word;
@@ -21,6 +22,11 @@ public class WordScorePair {
 	public WordScorePair(String word, float score){
 		this.word=word;
 		this.score=score;
+	}
+	
+	public WordScorePair(String word, String negation){
+		this.word=word;
+		this.negation=negation;
 	}
 
 	public String getWord() {
@@ -45,6 +51,14 @@ public class WordScorePair {
 
 	public void setScore(float score) {
 		this.score = score;
+	}
+
+	public String getNegation() {
+		return negation;
+	}
+
+	public void setNegation(String negation) {
+		this.negation = negation;
 	}
 	
 }

@@ -2,6 +2,11 @@ package backend.data;
 
 import java.util.ArrayList;
 
+/**
+ * Data Structure for storing a sentiment and all sentiment word score pairs
+ * @author Pazifik
+ *
+ */
 public class SentimentWordScorePair {
 	
 	private String sentiment;

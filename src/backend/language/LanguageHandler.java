@@ -1,8 +1,4 @@
 package backend.language;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 
 import com.cybozu.labs.langdetect.Detector;
@@ -36,49 +32,10 @@ public class LanguageHandler {
 	}
 	
 	/**
-	 * Detects the language from a given txt file
-	 * by considerating only the first 5 words max of the first line of the txt file
-	 * ONLY USEFUL IF txt file consists of texts of one same language
-	 * @param reviewsfile
-	 * @return the detected language, e.g. "en" for English or "de" for German
-	 */
-	public String detectLanguageFromFile(File reviewsfile){
-		String lang = "";
-		BufferedReader br = null;
-		try {
-			br = new BufferedReader(new FileReader(reviewsfile));
-			String line = null;
-			if((line = br.readLine()) != null){
-				String [] tokens = line.split("\\s+");
-				String firstwords = "";
-				int count = 0;
-				for(String s: tokens){
-					System.out.println(s);
-					firstwords = firstwords + " " + s;
-					count++;
-					if(count==10)
-						break;
-				}
-				lang = detectLanguageFromString(firstwords);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally{
-			try {
-				if(br != null){
-					br.close();
-				}	
-			} catch (IOException e){
-					e.printStackTrace();
-			}
-		}
-		return lang;
-	}
-	
-	/**
 	 * Detects the language from a given string
 	 * @param string
-	 * @return the detected language, e.g. "en" for English or "de" for German
+	 * @return non-empty string, e.g. "en" for English or "de" for German OR 
+	 * 			empty string if language could not be detected
 	 */
 	public String detectLanguageFromString(String string){
 		String lang = "";

@@ -1,7 +1,5 @@
 package backend.sentiment;
 
-import java.util.ArrayList;
-
 import backend.data.SentimentWordScorePair;
 
 public interface SentimentHandler {
@@ -19,9 +17,9 @@ public interface SentimentHandler {
 	 * Analyzes the given string and returns its sentiment "pos" / "neg" / "neu"
 	 * including a list of all detected sentiment words with their scores
 	 * @param string
-	 * @return
+	 * @return a SentimentWordScorePair storing the overall sentiment and all sentiment words with its scores
 	 */
-	public ArrayList<SentimentWordScorePair> getSentimentWithKeywords(String string);
+	public SentimentWordScorePair getSentimentWithKeywords(String string, String lang);
 	
 	
 }

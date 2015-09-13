@@ -11,12 +11,21 @@
 
 
 <h3>Sentiment Servlet</h3>
-<form action="/sentiment-web/detectSentiment" method="post">
+<form action="/sentiment-web/detectSentiment" method="post" accept-charset="UTF-8">
 
 <p>Request URL:</p>
-<div>/sentiment-web/detectSentiment?reviewtext=&keywords=false</div>
-<p>true - overall sentiment + all detected sentiment words including their scores</p>
-<p>false - overall sentiment</p>
+<div>/sentiment-web/detectSentiment?<b>reviewtext</b>=&<b>keywords</b>=false</div>
+<p><u>Parameters</u></p>
+- <b>reviewtext</b> (String)
+<br>
+The text to be analysed
+<br><br>
+- <b>keywords</b> (true/false)
+<br>
+true = overall sentiment + all detected sentiment words including their scores
+<br>
+false = overall sentiment
+<br><br>
 DEMO
 <br>
 <textarea rows="10" cols="80" name="reviewtext"></textarea>
@@ -28,7 +37,7 @@ DEMO
 
 
 <h2>RecipeServlet</h2>
-<form action="/smart-kitchen-assistant/getAllRecipes?filter=&ingredientsExist=false&amountPortion=0" method="post">
+<form action="/sentiment-web/getAllRecipes?filter=&ingredientsExist=false&amountPortion=0" method="post">
 <input id="submit" type="submit" value="getAllRecipes">
 </form>
 <form action="/smart-kitchen-assistant/getAllRecipes" method="post">

@@ -1,35 +1,55 @@
 package backend.sentiment;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import backend.language.Language;
 import backend.data.CharsetReader;
 import backend.data.Dictionaries;
 import backend.data.Pair;
 import backend.data.SentimentWordScorePair;
-import backend.language.LanguageHandler;
+import backend.data.WordScorePair;
 
 
 public class SentimentHandlerImpl implements SentimentHandler{
 	
 	private Dictionaries dictionaries;
-	private LanguageHandler languageHandler;
 	private File dictfile;
 	private File negationfile;
 	private File boosterfile;
 	private File emoticonfile;
-	
+	private ArrayList<WordScorePair> wordscorepairs;
+
 	public SentimentHandlerImpl(String filepath){
 		dictionaries = new Dictionaries(filepath);
-		languageHandler = new LanguageHandler(filepath);
+		wordscorepairs = new ArrayList<WordScorePair>();
+	}
+	
+	
+	@Override
+	public String getSentiment(String string, String lang) {
+		
+		String sentiment = getSentimentMaximization(string, lang);
+//		String sentiment = getSentimentAggregation(string, lang);
+		return sentiment;
 		
 	}
+
+	@Override
+	public SentimentWordScorePair getSentimentWithKeywords(String string, String lang) {
+		
+		this.wordscorepairs = new ArrayList<WordScorePair>();
+		
+		String sentiment = getSentimentMaximization(string, lang);
+//		String sentiment = getSentimentAggregation(string, lang);
+		
+		SentimentWordScorePair swsp = new SentimentWordScorePair(sentiment,this.wordscorepairs);
+		return swsp;
+	}
+	
 	
 	/**
 	 * Extracts the sentiment by line maximization from a given string and returns the sentiment
@@ -68,7 +88,12 @@ public class SentimentHandlerImpl implements SentimentHandler{
 			emoticonfile = Dictionaries.emoticonfile;
 		}
 		else{
-			System.out.println("Language "+ lang +" is not supported.");
+			if(lang.contains("-"))
+				lang.replace("-", "_");
+			if(lang.equals(""))
+				System.out.println("Language could not be detected.");
+			else
+				System.out.println("Language "+ Language.get(lang) +" is not supported.");
 			return "";
 		}
 		
@@ -102,6 +127,7 @@ public class SentimentHandlerImpl implements SentimentHandler{
 			
 			float boosterScore = 0;
 			boolean boosterDetected = false;
+			String boosterWord = "";
 			
 			boolean negateSentiment = false;
 			boolean negationDetected = false;
@@ -125,7 +151,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
             try {
 				String[] words = sentence.split("\\s+");
 				for(String e: words){
-//					emoticonbr = new BufferedReader(new FileReader(emoticonfile));
 					emoticonbr = new CharsetReader().getBufferedReader(emoticonfile);
 					// Iterate through Emoticon-File
 					lineNumber = 0;
@@ -140,6 +165,7 @@ public class SentimentHandlerImpl implements SentimentHandler{
 					    				"Sentiment Score for \"" + e + "\" has to be Integer/Float, line: "+lineNumber);
 					    	}
 	                		emoticonScore = emoticonScore + Float.parseFloat(emoticonentries[1]);
+	                		wordscorepairs.add(new WordScorePair(emoticonentries[0],emoticonentries[1]));
                 		}
 	                } // END Iterate through Emoticon-File
 				}
@@ -180,8 +206,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		                while( (negationline = negationbr.readLine()) != null){
 		                	String[] negationentries = negationline.split("\\t");
 		                	if(match(word,negationentries[0])){
-//		                		System.out.print(word+"\n");
 		                		sysprints.add(word+"\n");
+		                		wordscorepairs.add(new WordScorePair(word,"negation"));
 		                		negateSentiment = true;
 		                		negationDetected = true;
 		                		negationCounter = 0;
@@ -204,29 +230,33 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		                	lineNumber++;
 		                	String[] boosterentries = boosterline.split("\\t");
 		                	if(match(word,boosterentries[0])){
-//		                		System.out.print(word);
 		                		sysprints.add(word);
 		                		if(!isFloat(boosterentries[1])){
 						    		throw new NumberFormatException(
 						    				"Sentiment Score for \"" + word + "\" has to be Integer/Float, line: "+lineNumber);
 						    	}
 		                		float currentBoosterScore = Float.parseFloat(boosterentries[1]);
-//		                		System.out.println("\t["+currentBoosterScore+"]");
 		                		sysprints.add("\t["+currentBoosterScore+"]\n");
+		                		
 		                		boosterScore = currentBoosterScore;
-//				                System.out.println("boosterScore: "+boosterScore);
 		                		boosterDetected = true;
 		                	}
 		                } // END Iterate through Booster-File
+		                
 		                if(boosterDetected){
 		                	boosterDetected = false;
+		                	boosterWord = word;
 		                	continue;
+		                }
+		                if(!boosterWord.equals("")){
+		                	wordscorepairs.add(new WordScorePair(boosterWord,boosterScore));
+		                	boosterWord = "";
 		                }
 		                
 		                
 		                int dictwordlength = 0;
 		                ArrayList<String> scoreprints = new ArrayList<String>();
-		                
+		                ArrayList<WordScorePair> tempwordscorepairs = new ArrayList<WordScorePair>();
 		                // Iterate through Dictionary-File
 		                lineNumber = 0;
 						while( (dictline = dictbr.readLine()) != null){
@@ -239,7 +269,7 @@ public class SentimentHandlerImpl implements SentimentHandler{
 							    	if(dictentries[0].length() > dictwordlength){
 							    		dictwordlength = dictentries[0].length();
 							    		scoreprints = new ArrayList<String>();
-//							    		System.out.print(word);
+							    		tempwordscorepairs = new ArrayList<WordScorePair>();
 							    		scoreprints.add(word);
 								    	printed = true;
 								    	if(!isFloat(dictentries[1])){
@@ -250,8 +280,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    	// if positiv
 								    	if(currentScore > 0){
 								    		tempPosScore = currentScore;
-//								    		System.out.println("\t["+currentScore+",-1]");
 								    		scoreprints.add("\t["+tempPosScore+",-1]\n");
+								    		tempwordscorepairs.add(new WordScorePair(word, new Pair(tempPosScore,-1)));
 								    		// SentiStrength boost version
 								    		tempPosScore = tempPosScore + boosterScore;
 								    		// Taboada boost version
@@ -265,7 +295,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		// Taboada shift version
 								    		if(negateSentiment){
 								    			if((tempPosScore-4) < 0){
-//								    				System.out.println("\t["+currentScore+",-1] -> "+"[1,"+(currentScore-4)+"]");
 									    			scoreprints.add("\t["+tempPosScore+",-1] -> "+"[1,"+(tempPosScore-4)+"]\n");
 									    			tempNegScore = tempPosScore - 4;
 									    			tempPosScore = 1;
@@ -273,14 +302,12 @@ public class SentimentHandlerImpl implements SentimentHandler{
 									    			negDetected = true;
 								    			}
 								    			else if((tempPosScore-4) == 0){
-//							    					System.out.println("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]");
 								    				scoreprints.add("\t["+tempPosScore+",-1] -> "+"["+(tempPosScore-4)+",-1]\n");
 								    				tempPosScore = 1;
 									    			lastSentimentPositive = false;
 									    			negDetected = true;
 								    			}
 								    			else{
-//								    				System.out.println("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]");
 									    			scoreprints.add("\t["+tempPosScore+",-1] -> "+"["+(tempPosScore-4)+",-1]\n");
 									    			tempPosScore = tempPosScore - 4;
 									    			lastSentimentPositive = false;
@@ -291,9 +318,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    	// if negativ
 								    	else if(currentScore < 0){
 								    		tempNegScore = currentScore;
-								    		System.out.println("tempNeg: "+tempNegScore);
-//							    			System.out.println("\t[1,"+currentScore+"]");
 							    			scoreprints.add("\t[1,"+tempNegScore+"]\n");
+							    			tempwordscorepairs.add(new WordScorePair(word, new Pair(1,tempNegScore)));
 							    			// SentiStrength boost version
 							    			tempNegScore = tempNegScore - boosterScore;
 									    	// Taboada boost version
@@ -306,7 +332,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		
 								    		// SentiStrength version (neutralize)
 								    		if(negateSentiment){
-//								    			System.out.println(" -> [1,-1]");
 								    			scoreprints.add(" -> [1,-1]\n");
 								    			tempNegScore = -1;
 								    			lastSentimentPositive = true;
@@ -315,21 +340,18 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		// Taboada version (shift)
 //								    		if(negateSentiment){
 //								    			if((tempNegScore+4) < 0){
-////										    		System.out.println("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]");
 //									    			scoreprints.add("\t[1,"+tempNegScore+"] -> [1,"+(tempNegScore+4)+"]\n");
 //									    			tempNegScore = tempNegScore + 4;
 //								    				lastSentimentPositive = false;
 //								    				negDetected = true;
 //								    			}
 //										    	else if((tempNegScore+4) == 0){
-////										    		System.out.println("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]");
 //										    		scoreprints.add("\t[1,"+tempNegScore+"] -> [1,"+(tempNegScore+4)+"]\n");
 //										    		tempNegScore = -1;
 //										    		lastSentimentPositive = true;
 //								    				posDetected = true;
 //									    		}
 //								    			else{
-////									    			System.out.println("\t[1,"+currentScore+"] -> ["+(currentScore+4)+",-1]");
 //									    			scoreprints.add("\t[1,"+tempNegScore+"] -> ["+(tempNegScore+4)+",-1]\n");
 //									    			tempPosScore = tempNegScore + 4;
 //									    			tempNegScore = -1;
@@ -344,8 +366,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 							    			posDetected = true;
 							    		}
 								    	if(tempNegScore < negScore){
-								    		System.out.println(tempNegScore);
-								    		System.out.println(negScore);
 							    			negScore = tempNegScore;
 							    			lastSentimentPositive = false;
 							    			negDetected = true;
@@ -358,8 +378,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 						    
 						} // END Iterate through Dictionary-File
 						sysprints.addAll(scoreprints);
+						wordscorepairs.addAll(tempwordscorepairs);
 						if(!printed){
-//							System.out.println(word);
 							sysprints.add(word+"\n");
 						}
 					
@@ -382,13 +402,11 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	        
 	        // Emoticon (Smileys) handling
 	        if(emoticonScore > 0){
-//	        	System.out.println("EmoticonScore: "+emoticonScore);
 	        	sysprints.add("EmoticonScore: "+emoticonScore+"\n");
 	        	posScore++;
 	        	posDetected = true;
 	        }
 	        else if(emoticonScore < 0){
-//	        	System.out.println("EmoticonScore: "+emoticonScore);
 	        	sysprints.add("EmoticonScore: "+emoticonScore+"\n");
 	        	negScore--;
 	        	negDetected = true;
@@ -396,7 +414,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	        
 	        Pair sentenceScore = new Pair(posScore,negScore);
 	        sentenceScores.add(sentenceScore);
-//	        System.out.println("Sentence: "+sentenceScore.toString());
 	        sysprints.add("Sentence: "+sentenceScore.toString()+"\n");
 	        
 	        // sysoprint the words and scores
@@ -439,34 +456,28 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		if(posDetected && negDetected){
 			float difference = Math.abs(absolutetextPos - absolutetextNeg);
 			if(difference <= 0.5){
-				System.out.println("AAA");
 				System.out.println("NEUTRAL"+"\t"+textScore.toString());
 				result = "neu";
 			}
 			else if(absolutetextPos > absolutetextNeg){
-				System.out.println("BBB");
 		        System.out.println("POSITIV"+"\t"+textScore.toString());
 		        result = "pos";
 		    }
 	        else{
-	        	System.out.println("DDD");
 	        	System.out.println("NEGATIV"+"\t"+textScore.toString());
 	        	result = "neg";
 	        }
 		}
 		if(!posDetected && !negDetected){
-			System.out.println("EEE");
 			System.out.println("NEUTRAL"+"\t"+textScore.toString());
 			result = "neu";
 		}
 		if( (posDetected & !negDetected)  ||  (!posDetected & negDetected) ){
 			if(absolutetextPos > absolutetextNeg){
-				System.out.println("FFF");
 		        System.out.println("POSITIV"+"\t"+textScore.toString());
 		        result = "pos";
 		    }
 	        else if(absolutetextPos == absolutetextNeg){
-	        	System.out.println("GGG");
 	        	if(posDetected && !negDetected){
 	        		System.out.println("POSITIV"+"\t"+textScore.toString());
 	        		result = "pos";
@@ -481,7 +492,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	        	}
 	        }
 	        else{
-	        	System.out.println("HHH");
 	        	System.out.println("NEGATIV"+"\t"+textScore.toString());
 	        	result = "neg";
 	        }
@@ -527,7 +537,12 @@ public class SentimentHandlerImpl implements SentimentHandler{
 			emoticonfile = Dictionaries.emoticonfile;
 		}
 		else{
-			System.out.println("Language "+ lang +" is not supported.");
+			if(lang.contains("-"))
+				lang.replace("-", "_");
+			if(lang.equals(""))
+				System.out.println("Language could not be detected.");
+			else
+				System.out.println("Language "+ Language.get(lang) +" is not supported.");
 			return "";
 		}
 		
@@ -559,6 +574,7 @@ public class SentimentHandlerImpl implements SentimentHandler{
 			
 			float boosterScore = 0;
 			boolean boosterDetected = false;
+			String boosterWord = "";
 			
 			boolean negateSentiment = false;
 			boolean negationDetected = false;
@@ -596,6 +612,7 @@ public class SentimentHandlerImpl implements SentimentHandler{
 					    				"Sentiment Score for \"" + e + "\" has to be Integer/Float, line: "+lineNumber);
 					    	}
 	                		emoticonScore = emoticonScore + Float.parseFloat(emoticonentries[1]);
+	                		wordscorepairs.add(new WordScorePair(emoticonentries[0],emoticonentries[1]));
                 		}
 	                } // END Iterate through Emoticon-File
 				}
@@ -636,8 +653,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		                while( (negationline = negationbr.readLine()) != null){
 		                	String[] negationentries = negationline.split("\\t");
 		                	if(match(word,negationentries[0])){
-//		                		System.out.print(word+"\n");
 		                		sysprints.add(word+"\n");
+		                		wordscorepairs.add(new WordScorePair(word,"negation"));
 		                		negateSentiment = true;
 		                		negationDetected = true;
 		                		negationCounter = 0;
@@ -660,31 +677,33 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		                	lineNumber++;
 		                	String[] boosterentries = boosterline.split("\\t");
 		                	if(match(word,boosterentries[0])){
-//		                		System.out.print(word);
 		                		sysprints.add(word);
 		                		if(!isFloat(boosterentries[1])){
 						    		throw new NumberFormatException(
 						    				"Sentiment Score for \"" + word + "\" has to be Integer/Float, line: "+lineNumber);
 						    	}
 		                		float currentBoosterScore = Float.parseFloat(boosterentries[1]);
-//		                		System.out.print("\t["+currentBoosterScore+"]\n");
 		                		sysprints.add("\t["+currentBoosterScore+"]\n");
 		                		boosterScore = currentBoosterScore;
-//				                System.out.println("boosterScore: "+boosterScore);
 		                		boosterDetected = true;
 		                	}
 		                } // END Iterate through Booster-File
 		                if(boosterDetected){
 		                	boosterDetected = false;
+		                	boosterWord = word;
 		                	continue;
 		                }
+		                if(!boosterWord.equals("")){
+		                	wordscorepairs.add(new WordScorePair(boosterWord,boosterScore));
+		                	boosterWord = "";
+		                }
+		                
 		                int dictwordlength = 0;
 		                float tempPosScore = 0;
 		                float tempNegScore = 0;
 		                
-		                
 		                ArrayList<String> scoreprints = new ArrayList<String>();
-		                
+		                ArrayList<WordScorePair> tempwordscorepairs = new ArrayList<WordScorePair>();
 		                
 		                // Iterate through Dictionary-File
 		                lineNumber = 0;
@@ -700,10 +719,10 @@ public class SentimentHandlerImpl implements SentimentHandler{
 							    	if(dictentries[0].length() > dictwordlength){
 								    	dictwordlength = dictentries[0].length();
 								    	scoreprints = new ArrayList<String>();
+								    	tempwordscorepairs = new ArrayList<WordScorePair>();
 								    	tempPosScore = 0;
 								    	tempNegScore = 0;
 								    	
-//								    	System.out.print(word);
 										scoreprints.add(word);
 								    	printed = true;
 								    	if(!isFloat(dictentries[1])){
@@ -713,9 +732,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    	float currentScore = Integer.parseInt(dictentries[1]);
 								    	// if positiv
 								    	if(currentScore > 0){
-								    		
-//								    		System.out.println("\t["+currentScore+",-1]");
 								    		scoreprints.add("\t["+currentScore+",-1]\n");
+								    		tempwordscorepairs.add(new WordScorePair(word, new Pair(currentScore,-1)));
 								    		// SentiStrength boost version
 								    		currentScore = currentScore + boosterScore;
 								    		// Taboada boost version
@@ -729,16 +747,14 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		// Taboada shift version
 								    		if(negateSentiment){
 								    			if((currentScore-4) < 0){
-//								    				System.out.println("\t["+currentScore+",-1] -> "+"[1,"+(currentScore-4)+"]");
-								    				scoreprints.add("\t["+currentScore+",-1] -> "+"[1,"+(currentScore-4)+"]\n");
+//								    				scoreprints.add("\t["+currentScore+",-1] -> "+"[1,"+(currentScore-4)+"]\n");
 								    				tempNegScore = tempNegScore + (currentScore - 4);
 									    			tempPosScore++;
 									    			lastSentimentPositive = false;
 									    			negDetected = true;
 								    			}
 								    			else if((currentScore-4) == 0){
-//								    				System.out.println("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]");
-								    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
+//								    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
 //								    				tempPosScore = 1;
 								    				tempPosScore = currentScore-4;
 								    				tempNegScore--;
@@ -746,8 +762,7 @@ public class SentimentHandlerImpl implements SentimentHandler{
 									    			negDetected = true;
 								    			}
 								    			else{
-//								    				System.out.println("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]");
-								    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
+//								    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
 								    				tempPosScore = tempPosScore + (currentScore - 4);
 								    				tempNegScore--;
 //									    			lastSentimentPositive = true;
@@ -767,8 +782,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    	}
 								    	// if negativ
 								    	else if(currentScore < 0){
-//							    			System.out.println("\t[1,"+currentScore+"]");
-								    		scoreprints.add("\t[1,"+currentScore+"]\n");
+							    			scoreprints.add("\t[1,"+currentScore+"]\n");
+							    			tempwordscorepairs.add(new WordScorePair(word, new Pair(1,currentScore)));
 							    			// SentiStrength boost version
 									    	currentScore = currentScore - boosterScore;
 									    	// Taboada boost version
@@ -780,44 +795,40 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		}
 									    	
 								    		// SentiStrength version (neutralize)
-//								    		if(negateSentiment){
-////								    			System.out.println(" -> [1,-1]");
-//									    		scoreprints.add(" -> [1,-1]\n");
-//								    			posScore++;
-//								    			negScore--;
-//								    			currentScore = 0;
-//									    		lastSentimentPositive = true;
-//									    		posDetected = true;
-//								    		}
-								    		// Taboada version (shift)
 								    		if(negateSentiment){
-								    			if((currentScore+4) < 0){
-//									    			System.out.println("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]");
-								    				scoreprints.add("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]\n");
-									    			tempNegScore = tempNegScore + (currentScore + 4);
-									    			tempPosScore++;
-								    				lastSentimentPositive = false;
-								    				negDetected = true;
-								    			}
-								    			else if((currentScore+4) == 0){
-//								    				System.out.println("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]");
-							    					scoreprints.add("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]\n");
-//							    					tempNegScore = -1;
-							    					tempNegScore = currentScore+4;
-							    					tempPosScore++;
-								    				lastSentimentPositive = true;
-								    				posDetected = true;
-							    				}
-								    			else{
-//								    				System.out.println("\t[1,"+currentScore+"] -> ["+(currentScore+4)+",-1]");
-								    				scoreprints.add("\t[1,"+currentScore+"] -> ["+(currentScore+4)+",-1]\n");
-								    				tempPosScore = tempPosScore + (currentScore + 4);
-								    				tempNegScore--;
-								    				lastSentimentPositive = true;
-								    				posDetected = true;
-								    			}
+								    			scoreprints.add(" -> [1,-1]\n");
+								    			posScore++;
+								    			negScore--;
 								    			currentScore = 0;
+									    		lastSentimentPositive = true;
+									    		posDetected = true;
 								    		}
+								    		// Taboada version (shift)
+//								    		if(negateSentiment){
+//								    			if((currentScore+4) < 0){
+//									    			scoreprints.add("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]\n");
+//									    			tempNegScore = tempNegScore + (currentScore + 4);
+//									    			tempPosScore++;
+//								    				lastSentimentPositive = false;
+//								    				negDetected = true;
+//								    			}
+//								    			else if((currentScore+4) == 0){
+//								    				scoreprints.add("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]\n");
+////							    					tempNegScore = -1;
+//							    					tempNegScore = currentScore+4;
+//							    					tempPosScore++;
+//								    				lastSentimentPositive = true;
+//								    				posDetected = true;
+//							    				}
+//								    			else{
+//								    				scoreprints.add("\t[1,"+currentScore+"] -> ["+(currentScore+4)+",-1]\n");
+//								    				tempPosScore = tempPosScore + (currentScore + 4);
+//								    				tempNegScore--;
+//								    				lastSentimentPositive = true;
+//								    				posDetected = true;
+//								    			}
+//								    			currentScore = 0;
+//								    		}
 								    		else{
 								    			tempNegScore = tempNegScore + currentScore;
 								    			tempPosScore++;
@@ -834,8 +845,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 							
 						} // END Iterate through Dictionary-File
 						sysprints.addAll(scoreprints);
+						wordscorepairs.addAll(tempwordscorepairs);
 						if(!printed){
-//							System.out.println(word);
 							sysprints.add(word+"\n");
 						}
 						
@@ -862,13 +873,11 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	        
 	        // Emoticon (Smileys) handling
 	        if(emoticonScore > 0){
-//	        	System.out.println("EmoticonScore: "+emoticonScore);
 	        	sysprints.add("EmoticonScore: "+emoticonScore+"\n");
 	        	posScore++;
 	        	posDetected = true;
 	        }
 	        else if(emoticonScore < 0){
-//	        	System.out.println("EmoticonScore: "+emoticonScore);
 	        	sysprints.add("EmoticonScore: "+emoticonScore+"\n");
 	        	negScore--;
 	        	negDetected = true;
@@ -876,7 +885,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	        
 	        Pair sentenceScore = new Pair(posScore,negScore);
 	        sentenceScores.add(sentenceScore);
-//	        System.out.println("Sentence: "+sentenceScore.toString());
 	        sysprints.add("Sentence: "+sentenceScore.toString()+"\n");
 	        
 	        // sysoprint the words and scores
@@ -919,34 +927,28 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		if(posDetected && negDetected){
 			float difference = Math.abs(absolutetextPos - absolutetextNeg);
 			if(difference <= 0.5){
-				System.out.println("AAA");
 				System.out.println("NEUTRAL"+"\t"+textScore.toString());
 				result = "neu";
 			}
 			else if(absolutetextPos > absolutetextNeg){
-				System.out.println("BBB");
 		        System.out.println("POSITIV"+"\t"+textScore.toString());
 		        result = "pos";
 		    }
 	        else{
-	        	System.out.println("DDD");
 	        	System.out.println("NEGATIV"+"\t"+textScore.toString());
 	        	result = "neg";
 	        }
 		}
 		if(!posDetected && !negDetected){
-			System.out.println("EEE");
 			System.out.println("NEUTRAL"+"\t"+textScore.toString());
 			result = "neu";
 		}
 		if( (posDetected & !negDetected)  ||  (!posDetected & negDetected) ){
 			if(absolutetextPos > absolutetextNeg){
-				System.out.println("FFF");
 		        System.out.println("POSITIV"+"\t"+textScore.toString());
 		        result = "pos";
 		    }
 	        else if(absolutetextPos == absolutetextNeg){
-	        	System.out.println("GGG");
 	        	if(posDetected && !negDetected){
 	        		System.out.println("POSITIV"+"\t"+textScore.toString());
 	        		result = "pos";
@@ -961,91 +963,11 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	        	}
 	        }
 	        else{
-	        	System.out.println("HHH");
 	        	System.out.println("NEGATIV"+"\t"+textScore.toString());
 	        	result = "neg";
 	        }
 		}
 		return result;
-	}
-	
-	
-	/**
-	 * Extracts the sentiment of each review of a given txt file (separated by \n)
-	 * and writes the results in another txt file.
-	 * If the file consists of reviews with all same language, set 2nd parameter to "true" to increase performance.
-	 * @param file
-	 * @param consistsOfSameLanguage
-	 */
-	public void getSentiment(File file, boolean consistOfSameLanguage){
-		
-		
-		String lang = languageHandler.detectLanguageFromFile(file);
-		String filepath = file.getAbsolutePath();
-			
-		BufferedReader br = null;
-		BufferedWriter writer = null;
-		BufferedWriter writer2 = null;
-		
-		try {
-			br = new BufferedReader(new FileReader(file));
-//			writer = new BufferedWriter(new FileWriter(new File(filepath.substring(0, filepath.length()-4)+"_Maximization.txt")));
-//			writer2 = new BufferedWriter(new FileWriter(new File(filepath.substring(0, filepath.length()-4)+"_Aggregation.txt")));
-			writer = new BufferedWriter(new FileWriter(new File(filepath.substring(0, filepath.length()-4)+"_Results.txt")));
-			
-			long startTime = System.nanoTime();
-			
-			String line = null;
-			while( (line = br.readLine()) != null){
-				String[] reviews = line.split("\\n");
-			    
-			    for(String review: reviews){
-			    	if(!consistOfSameLanguage){
-			    		lang = languageHandler.detectLanguageFromString(review);
-			    	}
-			    	// We only want EN and DE
-			    	if(lang.equals("en")){
-			    		String sentimentMaxi = getSentimentMaximization(review, "en");
-			    		String sentimentAggr = getSentimentAggregation(review, "en");
-					    writer.write(sentimentMaxi + "\t" + sentimentAggr + System.lineSeparator());
-					    writer.flush();
-//					    writer.write(sentimentMaxi + System.lineSeparator());
-//					    writer.flush();
-//					    writer2.write(sentimentAggr + System.lineSeparator());
-//					    writer2.flush();
-			    	}
-			    	else if(lang.equals("de")){
-			    		String sentimentMaxi = getSentimentMaximization(review, "de");
-			    		String sentimentAggr = getSentimentAggregation(review, "de");
-			    		writer.write(sentimentMaxi + "\t" + sentimentAggr + System.lineSeparator());
-					    writer.flush();
-//			    		writer.write(sentimentMaxi + System.lineSeparator());
-//					    writer.flush();
-//					    writer2.write(sentimentAggr + System.lineSeparator());
-//					    writer2.flush();
-			    	}
-			    }
-			}
-			long estimatedTime = System.nanoTime() - startTime;
-			System.out.println("End Sentiment Detection Single Language File: "+ estimatedTime +" ns");
-				
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally{
-			try {
-				if(br != null){
-					br.close();
-				}
-				if(writer != null){
-					writer.close();
-				}
-				if(writer2 != null){
-					writer2.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
 	}
 	
 	
@@ -1078,22 +1000,87 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	        return false;
 	    }
 	}
-
-	@Override
-	public String getSentiment(String string, String lang) {
-		
-		String temp = getSentimentAggregation(string, lang);
-		return temp;
-		
-	}
-
-	@Override
-	public ArrayList<SentimentWordScorePair> getSentimentWithKeywords(
-			String string) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 	
+	
+	public static void main(String[] args) throws IOException {
+//		SentimentHandlerImpl sentiHandler = new SentimentHandlerImpl("WebContent");
+//		
+//		ArrayList<String> testSentences = new ArrayList<String>();
+//		// no sentiment
+//		testSentences.add("I go to school today.");
+//		// positive sentiment
+//		testSentences.add("good day");
+//		// positive & negative sentiment
+//		testSentences.add("Good day, bad weather");
+//		testSentences.add("Its bad weather. Good day");
+//		testSentences.add("good day, horrible weather");
+//		testSentences.add("I love and hate dogs.");
+//		testSentences.add("She is nice but also horrible.");
+//		testSentences.add("Amazing and good day. Its devastating weather");
+//		testSentences.add("Excellent day, horrible and bad weather");
+//		testSentences.add("Excellent apt, bad host and bad choice");
+//		// Booster
+//		testSentences.add("very good day");
+//		testSentences.add("very bad day");
+//		testSentences.add("very slightly bad day");
+//		testSentences.add("sometimes good day");
+//		testSentences.add("sometimes bad day");
+//		testSentences.add("fucking very absolutely incredibly good day");
+//		// Negation
+//		testSentences.add("not good day");
+//		testSentences.add("not bliss day");
+//		testSentences.add("not devastating day");
+//		testSentences.add("not bad day");
+//		testSentences.add("Today is not a good day");
+//		testSentences.add("Unfortunately I was not able to meet the wonderful and lovely host.");
+//		// Negation + Booster
+//		testSentences.add("Everything is not very good.");
+//		testSentences.add("Everything is not very amazing.");
+//		testSentences.add("not a really good day");
+//		testSentences.add("He was not a really helpful person and also not friendly.");
+//		// Ausrufezeichen
+//		testSentences.add("Just a normal day!");
+//		testSentences.add("Its a good day!");
+//		testSentences.add("Host was unfriendly!");
+//		testSentences.add("Good location but unfriendly host!");
+//		testSentences.add("Good location but very unfriendly host!");
+//		// Smileys
+//		testSentences.add("hello :D");
+//		testSentences.add("It was a nice experience (^.^)");
+//		testSentences.add("Its a good day :(");
+//		testSentences.add("Host was unfriendly :(");
+//		// Miscellaneous
+//		testSentences.add("The apt was good and the host was nice and kind to me. I was happy with the experience. But the living room was a real catastrophe.");
+//		testSentences.add("nicht sehr spektakulär");
+//		testSentences.add("nicht sehr top");
+//		testSentences.add("leider war die nicht sehr sauber");
+//		testSentences.add("gut und schlecht");
+//		testSentences.add("|Außerordentlich netter Kontakt. Zuverlässiger und verantwortungsvoller Gast. Wohnung sauber und ordentlich hinterlassen. Könnte nicht besser sein. Gerne wieder.");
+//		testSentences.add("John haben wir außer bei Ankunft und Abreise quasi nicht gesehen, trotzdem macht er einen sympatischen Eindruck.");
+//		testSentences.add("|Das &amp;quot;Loft&amp;quot; ist ein einziger Abenteuerspielplatz - für Jugendliche und Erwachsene sicher ganz cool aber für Kinder unter 6 Jahren komplett ungeeignet. Ziemlich enttäuscht bin ich auch über das &amp;quot;verbergen&amp;quot; von wichtigen Infos, wie z. B. das Nicht-vorhandensein einer normalen und einfachen Dusche.    Es gibt einfach sehr viel zu bemängeln:    - Speziell möchte ich etwas zu dem direkten Nachbarn sagen, der nämlich jeden Tag um 14 Uhr uns stockbesoffen ziemlich plump angemacht hat und am vorletzten Tag auch noch ohne anzuklopfen einfach mitten in dem &amp;quot;Loft&amp;quot; stand. Wieso auch immer. Völlig respektlos.    - Die Treppe die nach oben führt ist das unsicherste Gerüst was ich jemals gesehen habe und grade kleine Kinder können leicht abrutschen und von der hohen Treppe fallen.  Außerdem befindet sich auch kein Geländer an der Treppe sowie auf der oberen Etage, das Kind kann praktisch jederzeit von der oberen Ebene auf die untere Ebene fallen.    - Eine richtige Dusche gibt es auch nicht. Es steht eine Regenwassertonne auf der oberen Etage und man kann sich &amp;quot;bequem&amp;quot; mit einem Eimer abduschen. Ja...für ein Kind also immer noch nicht zu gebrauchen.    - Es gibt keinen Wasseranschluss sowie kein warmes Wasser. Warmes Badewasser für die Kleine haben wir dann also in einem Wasserkocher warm gemacht. Dementsprechend schwer war dann auch das Abwaschen.    - Es gab auch nur Wasser aus Kanistern, dass wir jeden Tag selber von der Toilette holen mussten. Den Eimer in dem das Spülwasser nach dem Spülen dann war, konnte man auch diiiiirekt in der Toilette auskippen.    - Neben dem &amp;quot;Loft&amp;quot; befindet sich eine Werkstatt (ist also quasi eh eins) indem ein Mann dann auch um 16 Uhr fleissig angefangen hat zu sägen und zu basteln. Auch auf 2-maliges Bitten seine Arbeit vielleicht freundlicherweise nach 18 Uhr woanders fortzuführen kam nur: &amp;quot;Tja, ich mach heut noch bis 22 Uhr&amp;quot;. Dass unsere Kleine Ihren Schlaf braucht und um 18 Uhr ins Bett geht und das somit nicht möglich war, brauche ich nicht zu erwähnen. Jedoch besserte sich die Situation als sich der Gastgeber selbst beim Werkstattmann meldete.    Obwohl ich von vornerein gesagt habe, dass wir ein 1-Jähriges Kind mitbringen, und der Gastgeber also wusste auf was er sich einlässt, hat er von all den &amp;quot;Mängeln&amp;quot; nicht ein Wort verloren. Absolut unverantwortlich, sorry. Einfach ein No-Go.");
+//		
+//		for(String sentence: testSentences){
+//			System.out.println(sentiHandler.getSentimentMaximization(sentence, "en"));
+//			System.out.println(sentiHandler.getSentimentAggregation(sentence, "en"));
+//			
+//			System.out.println(sentiHandler.getSentimentMaximization(sentence, "de"));
+//			System.out.println(sentiHandler.getSentimentAggregation(sentence, "de"));
+//		}
+//		
+//		File file = new File("C:/Users/Pazifik/Desktop/testreviews.txt");
+//		sentiHandler.getSentiment(file, true);
+//		sentiHandler.getSentiment(file, false);
+		
+		
+		
+		
+//		boolean x = match("enttäuscht","enttäusch*");
+//		if(x){
+//			System.out.println("TRUE");
+//		}
+//		else{System.out.println("FALSE");}
+		
+	}
 
 }
 
