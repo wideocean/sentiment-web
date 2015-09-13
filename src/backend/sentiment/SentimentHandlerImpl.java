@@ -2,11 +2,9 @@ package backend.sentiment;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.BreakIterator;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -14,10 +12,11 @@ import java.util.Locale;
 import backend.data.CharsetReader;
 import backend.data.Dictionaries;
 import backend.data.Pair;
+import backend.data.SentimentWordScorePair;
 import backend.language.LanguageHandler;
 
 
-public class SentimentHandlerImpl {
+public class SentimentHandlerImpl implements SentimentHandler{
 	
 	private Dictionaries dictionaries;
 	private LanguageHandler languageHandler;
@@ -26,9 +25,10 @@ public class SentimentHandlerImpl {
 	private File boosterfile;
 	private File emoticonfile;
 	
-	public SentimentHandlerImpl(){
-		dictionaries = new Dictionaries();
-		languageHandler = new LanguageHandler();
+	public SentimentHandlerImpl(String filepath){
+		dictionaries = new Dictionaries(filepath);
+		languageHandler = new LanguageHandler(filepath);
+		
 	}
 	
 	/**
@@ -979,6 +979,7 @@ public class SentimentHandlerImpl {
 	 */
 	public void getSentiment(File file, boolean consistOfSameLanguage){
 		
+		
 		String lang = languageHandler.detectLanguageFromFile(file);
 		String filepath = file.getAbsolutePath();
 			
@@ -1076,6 +1077,21 @@ public class SentimentHandlerImpl {
 	    catch(NumberFormatException e ) {
 	        return false;
 	    }
+	}
+
+	@Override
+	public String getSentiment(String string, String lang) {
+		
+		String temp = getSentimentAggregation(string, lang);
+		return temp;
+		
+	}
+
+	@Override
+	public ArrayList<SentimentWordScorePair> getSentimentWithKeywords(
+			String string) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 

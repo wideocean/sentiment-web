@@ -14,14 +14,18 @@ public class LanguageHandler {
 	
 	private Detector detector;
 	private ArrayList<String> undetected_reviews;
+	private static boolean profilesLoaded = false;
 	
 	/**
 	 * Constructor; responsible for loading the language profiles
 	 */
-	public LanguageHandler(){
+	public LanguageHandler(String filepath){
 		try {
 			// specify here the language profiles directory
-			DetectorFactory.loadProfile("language-detection/profiles.sm");
+			if(!profilesLoaded){
+				DetectorFactory.loadProfile(filepath+"/WEB-INF/language-detection/profiles.sm");
+				profilesLoaded = true;
+			}
 			
 			detector = DetectorFactory.create();
 			undetected_reviews = new ArrayList<String>();
@@ -97,26 +101,6 @@ public class LanguageHandler {
 	 */
 	public ArrayList<String> getUndetected_reviews() {
 		return undetected_reviews;
-	}
-	
-	public static void main(String[] args) {
-		LanguageHandler languageHandler = new LanguageHandler();
-		
-		// detectLanguageFromFile
-//		File reviews_eng = new File("C:/Users/Pazifik/Desktop/Reviews_English.txt");
-//		File reviews_ger = new File("C:/Users/Pazifik/Desktop/Reviews_German.txt");
-//		String lang1 = languageHandler.detectLanguageFromFile(reviews_eng);
-//		String lang2 = languageHandler.detectLanguageFromFile(reviews_ger);
-//		System.out.println("lang1 is "+lang1+", should be english");
-//		System.out.println("lang2 is "+lang2+", should be german");
-//		
-		// detectLanguageFromString
-		String ger = "Heute was es ein wunderschöner Tag. Hallo wie geht es dir so?";
-		String eng = "well it was great.";
-		String test = "Alles super.";
-		System.out.println("ger "+languageHandler.detectLanguageFromString(ger));
-		System.out.println("eng "+languageHandler.detectLanguageFromString(eng));
-		System.out.println("test "+languageHandler.detectLanguageFromString(test));
 	}
 
 }

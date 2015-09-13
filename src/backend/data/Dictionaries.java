@@ -4,13 +4,14 @@ import java.io.File;
 
 public class Dictionaries {
 
+	public static String filepath;
 	public static File dictfile;
 	public static File negationfile;
 	public static File boosterfile;
 	public static File emoticonfile;
 	
-	public Dictionaries(){
-		
+	public Dictionaries(String filepath){
+		Dictionaries.filepath = filepath;
 	}
 	
 	public File getDictfile() {
@@ -32,46 +33,46 @@ public class Dictionaries {
 	public void loadEN(){
 		
 		// SentiStrength
-//		dictfile = new File("dictionaries/en/SentiStrength/EmotionLookupTable.txt");
-//		negationfile = new File("dictionaries/en/SentiStrength/NegatingWordList.txt");
-//		boosterfile = new File("dictionaries/en/SentiStrength/BoosterWordList.txt");
-//		emoticonfile = new File("dictionaries/en/SentiStrength/EmoticonLookupTable.txt");
+//		dictfile = new File(filepath + "/WEB-INF/dictionaries/en/SentiStrength/EmotionLookupTable.txt");
+//		negationfile = new File(filepath + "/WEB-INF/dictionaries/en/SentiStrength/NegatingWordList.txt");
+//		boosterfile = new File(filepath + "/WEB-INF/dictionaries/en/SentiStrength/BoosterWordList.txt");
+//		emoticonfile = new File(filepath + "/WEB-INF/dictionaries/en/SentiStrength/EmoticonLookupTable.txt");
 		
 		// Taboada
-//		dictfile = new File("dictionaries/en/Taboada/EmotionLookupTable_Tabo.txt");
-//		boosterfile = new File("dictionaries/en/Taboada/BoosterWordList_Tabo.txt");
-//		negationfile = new File("dictionaries/en/Taboada/NegatingWordList_SentiStrength.txt");
-//		emoticonfile = new File("dictionaries/en/Taboada/EmoticonLookupTable_SentiStrength.txt");
+//		dictfile = new File(filepath + "/WEB-INF/dictionaries/en/Taboada/EmotionLookupTable_Tabo.txt");
+//		boosterfile = new File(filepath + "/WEB-INF/dictionaries/en/Taboada/BoosterWordList_Tabo.txt");
+//		negationfile = new File(filepath + "/WEB-INF/dictionaries/en/Taboada/NegatingWordList_SentiStrength.txt");
+//		emoticonfile = new File(filepath + "/WEB-INF/dictionaries/en/Taboada/EmoticonLookupTable_SentiStrength.txt");
 		
 		// Custom
-		dictfile = new File("dictionaries/en/Custom/EmotionLookupTable.txt");
-		negationfile = new File("dictionaries/en/Custom/NegatingWordList.txt");
+		dictfile = new File(filepath + "/WEB-INF/dictionaries/en/Custom/EmotionLookupTable.txt");
+		negationfile = new File(filepath + "/WEB-INF/dictionaries/en/Custom/NegatingWordList.txt");
 			// SentiStrength Booster (+1/-1)
-		boosterfile = new File("dictionaries/en/Custom/BoosterWordList.txt");
+		boosterfile = new File(filepath + "/WEB-INF/dictionaries/en/Custom/BoosterWordList.txt");
 			// Taboada Booster (%)
-//		boosterfile = new File("dictionaries/en/Custom/BoosterWordList_Tabo.txt");
-		emoticonfile = new File("dictionaries/en/Custom/EmoticonLookupTable.txt");
+//		boosterfile = new File(filepath + "/WEB-INF/dictionaries/en/Custom/BoosterWordList_Tabo.txt");
+		emoticonfile = new File(filepath + "/WEB-INF/dictionaries/en/Custom/EmoticonLookupTable.txt");
 		
 	}
 	
 	public void loadDE(){
 		// SentiStrength
-//		dictfile = new File("dictionaries/de/SentiStrength/EmotionLookupTable.txt");
-//		negationfile = new File("dictionaries/de/SentiStrength/NegatingWordList.txt");
-//		boosterfile = new File("dictionaries/de/SentiStrength/BoosterWordList.txt");
-//		emoticonfile = new File("dictionaries/de/SentiStrength/EmoticonLookupTable.txt");
+//		dictfile = new File(filepath + "/WEB-INF/dictionaries/de/SentiStrength/EmotionLookupTable.txt");
+//		negationfile = new File(filepath + "/WEB-INF/dictionaries/de/SentiStrength/NegatingWordList.txt");
+//		boosterfile = new File(filepath + "/WEB-INF/dictionaries/de/SentiStrength/BoosterWordList.txt");
+//		emoticonfile = new File(filepath + "/WEB-INF/dictionaries/de/SentiStrength/EmoticonLookupTable.txt");
 		
 		// Taboada
-//		boosterfile = new File("dictionaries/de/Taboada/BoosterWordList_Tabo.txt");
+//		boosterfile = new File(filepath + "/WEB-INF/dictionaries/de/Taboada/BoosterWordList_Tabo.txt");
 		
 		// Custom
-		dictfile = new File("dictionaries/de/Custom/EmotionLookupTable.txt");
-		negationfile = new File("dictionaries/de/Custom/NegatingWordList.txt");
+		dictfile = new File(filepath + "/WEB-INF/dictionaries/de/Custom/EmotionLookupTable.txt");
+		negationfile = new File(filepath + "/WEB-INF/dictionaries/de/Custom/NegatingWordList.txt");
 			// SentiStrength Booster (+1/-1)
-		boosterfile = new File("dictionaries/de/Custom/BoosterWordList.txt");
+		boosterfile = new File(filepath + "/WEB-INF/dictionaries/de/Custom/BoosterWordList.txt");
 			// Taboada Booster (%)
-//		boosterfile = new File("dictionaries/de/Custom/BoosterWordList_Tabo.txt");
-		emoticonfile = new File("dictionaries/de/Custom/EmoticonLookupTable.txt");
+//		boosterfile = new File(filepath + "/WEB-INF/dictionaries/de/Custom/BoosterWordList_Tabo.txt");
+		emoticonfile = new File(filepath + "/WEB-INF/dictionaries/de/Custom/EmoticonLookupTable.txt");
 	}
 	
 }
