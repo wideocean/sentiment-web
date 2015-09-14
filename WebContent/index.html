@@ -11,10 +11,8 @@
 
 
 <h3>Sentiment Servlet</h3>
-<form action="/sentiment-web/detectSentiment" method="post" accept-charset="UTF-8">
-
 <p>Request URL:</p>
-<div>/sentiment-web/detectSentiment?<b>reviewtext</b>=&<b>keywords</b>=false</div>
+<div>/sentiment-web/<span style="color:red">detectSentiment</span>?<b>reviewtext</b>=&<b>keywords</b>=false</div>
 <p><u>Parameters</u></p>
 - <b>reviewtext</b> (String)
 <br>
@@ -28,23 +26,26 @@ false = overall sentiment
 <br><br>
 DEMO
 <br>
-<textarea rows="10" cols="80" name="reviewtext"></textarea>
+<form action="/sentiment-web/detectSentiment" method="post" accept-charset="UTF-8">
+<textarea rows="10" cols="80" name="reviewtext" placeholder="1 review per line"></textarea>
 <input type="radio" name="keywords" value="true"> true
 <input type="radio" name="keywords" value="false" checked> false
 <input type="submit" name="submit" value="detectSentiment">
 </form>
 
 
-
-<h2>RecipeServlet</h2>
-<form action="/sentiment-web/getAllRecipes?filter=&ingredientsExist=false&amountPortion=0" method="post">
-<input id="submit" type="submit" value="getAllRecipes">
-</form>
-<form action="/smart-kitchen-assistant/getAllRecipes" method="post">
-<input type="text" name="filter" value="filter (optional)">
-<input type="text" name="ingredientsExist" value="ingredientsExist (boolean)">
-<input type="text" name="amountPortion" value="amountPortion">
-<input type="submit" name="submit" value="getAllRecipes">
+<br>
+<h3>LanguageServlet</h3>
+<p>Request URL:</p>
+<div>/sentiment-web/<span style="color:red">detectLanguage</span>?<b>text</b>=</div>
+<p><u>Parameters</u></p>
+- <b>text</b> (String)
+<br>
+The text to be analysed
+<br><br>
+<form action="/sentiment-web/detectLanguage" method="post" accept-charset="UTF-8">
+<input type="text" name="text" placeholder="Type text here">
+<input type="submit" name="submit" value="detectLanguage">
 </form>
 
 
