@@ -1,4 +1,4 @@
-package sentiment;
+package servlet;
 
 import java.util.ArrayList;
 import java.util.List;

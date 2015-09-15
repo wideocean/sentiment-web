@@ -1,4 +1,4 @@
-package sentiment;
+package servlet;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -18,6 +18,7 @@ import org.json.simple.JSONObject;
 import backend.data.SentimentWordScorePair;
 import backend.data.WordScorePair;
 import backend.language.LanguageHandler;
+import backend.language.LanguageHandlerImpl;
 import backend.sentiment.SentimentHandler;
 import backend.sentiment.SentimentHandlerImpl;
 
@@ -33,11 +34,11 @@ public class SentimentServlet extends HttpServlet {
 	private LanguageHandler langHandler;
 	
 
-    public void init(ServletConfig cfg) throws ServletException
+    public void init(ServletConfig config) throws ServletException
     {
-    	ServletContext context = cfg.getServletContext();
+    	ServletContext context = config.getServletContext();
     	String absoluteDiskPath = context.getRealPath("");
-    	langHandler = new LanguageHandler(absoluteDiskPath);
+    	langHandler = new LanguageHandlerImpl(absoluteDiskPath);
 		sentiHandler = new SentimentHandlerImpl(absoluteDiskPath);
 		System.out.println("-----------------------------");
 		System.out.println("    SentimentServlet started   ");
@@ -58,7 +59,6 @@ public class SentimentServlet extends HttpServlet {
 		response.setContentType("text/html; charset=UTF-8");
 		response.setCharacterEncoding("UTF-8");
 		request.setCharacterEncoding("UTF-8");
-//		System.out.println(request.getCharacterEncoding());
 		
 		StringBuffer requestURL = request.getRequestURL();
 		
@@ -74,17 +74,6 @@ public class SentimentServlet extends HttpServlet {
 	
 	private void detectSentiment(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {
-		
-		
-		
-		System.out.println(request.getQueryString());
-		
-		
-		
-		
-		
-		
-		
 		
 		String multiplereview = request.getParameter("reviewtext");
 		String withKeywords = request.getParameter("keywords");

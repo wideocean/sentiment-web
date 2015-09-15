@@ -10,16 +10,23 @@
     <welcome-file>default.jsp</welcome-file>
   </welcome-file-list>
   
+  
   <servlet>
     <servlet-name>SentimentServlet</servlet-name>
-    <servlet-class>sentiment.SentimentServlet</servlet-class>
+    <servlet-class>servlet.SentimentServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>LanguageServlet</servlet-name>
+    <servlet-class>servlet.LanguageServlet</servlet-class>
+  </servlet>
+  
   
   <servlet-mapping>
     <servlet-name>SentimentServlet</servlet-name>
     <url-pattern>/detectSentiment</url-pattern>
   </servlet-mapping>
-  
-  
-  
+  <servlet-mapping>
+    <servlet-name>LanguageServlet</servlet-name>
+    <url-pattern>/detectLanguage</url-pattern>
+  </servlet-mapping>
 </web-app>
