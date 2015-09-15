@@ -21,10 +21,10 @@ public class LanguageHandlerImpl implements LanguageHandler{
 			if(!profilesLoaded){
 				
 				// containing only DE and EN
-				DetectorFactory.loadProfile(filepath+"/WEB-INF/language-detection/profiles.sm");
+//				DetectorFactory.loadProfile(filepath+"/WEB-INF/language-detection/profiles.sm");
 				
 				// containing all languages
-//				DetectorFactory.loadProfile(filepath+"/WEB-INF/language-detection/profiles.sm_allLanguages");
+				DetectorFactory.loadProfile(filepath+"/WEB-INF/language-detection/profiles.sm_allLanguages");
 				
 				profilesLoaded = true;
 			}

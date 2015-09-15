@@ -93,7 +93,7 @@ public class SentimentServlet extends HttpServlet {
 				for(String e: reviews){
 					lineNumber++;
 					String lang = langHandler.detectLanguageFromString(e);
-					String sentiment = sentiHandler.getSentiment(e,lang);
+					String sentiment = sentiHandler.getSentiment(e,lang).getSentiment();
 					
 					if(sentiment.equals("")){
 						sentiment = "unknown";
@@ -117,7 +117,7 @@ public class SentimentServlet extends HttpServlet {
 				for(String e: reviews){
 					lineNumber++;
 					String lang = langHandler.detectLanguageFromString(e);
-					SentimentWordScorePair swsp = sentiHandler.getSentimentWithKeywords(e,lang);
+					SentimentWordScorePair swsp = sentiHandler.getSentiment(e,lang);
 					
 					String sentiment = swsp.getSentiment();
 					ArrayList<WordScorePair> keywords = swsp.getWordScorePairs();

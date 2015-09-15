@@ -28,18 +28,9 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		wordscorepairs = new ArrayList<WordScorePair>();
 	}
 	
-	
-	@Override
-	public String getSentiment(String string, String lang) {
-		
-		String sentiment = getSentimentMaximization(string, lang);
-//		String sentiment = getSentimentAggregation(string, lang);
-		return sentiment;
-		
-	}
 
 	@Override
-	public SentimentWordScorePair getSentimentWithKeywords(String string, String lang) {
+	public SentimentWordScorePair getSentiment(String string, String lang) {
 		
 		this.wordscorepairs = new ArrayList<WordScorePair>();
 		
