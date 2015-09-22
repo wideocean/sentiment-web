@@ -361,13 +361,13 @@ public class SentimentHandlerImpl implements SentimentHandler{
 							    			lastSentimentPositive = false;
 							    			negDetected = true;
 							    		}
-									    boosterScore = 0;
 							    	}
 							    	
 							    } // END match(word,dictentry)
 							}
 						    
 						} // END Iterate through Dictionary-File
+						boosterScore = 0;
 						sysprints.addAll(scoreprints);
 						wordscorepairs.addAll(tempwordscorepairs);
 						if(!printed){
@@ -828,13 +828,13 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		}
 								    		
 								    	}
-									    boosterScore = 0;
 								    }
 							    } // END match(word,dictentry)
 							    
 							}
 							
 						} // END Iterate through Dictionary-File
+						boosterScore = 0;
 						sysprints.addAll(scoreprints);
 						wordscorepairs.addAll(tempwordscorepairs);
 						if(!printed){
