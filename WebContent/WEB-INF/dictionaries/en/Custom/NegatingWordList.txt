@@ -5,12 +5,18 @@ cannot
 cant
 couldn't
 couldnt
+didn't	2015
+didnt	2015
 don't
 dont
 isn't
 isnt
 never
 not
+wasn't	2015
+wasnt	2015
+weren't	2015
+werent	2015
 won't
 wont
 wouldn't
