@@ -80,7 +80,7 @@ public class SentimentServlet extends HttpServlet {
 		
 		JSONObject json = new JSONObject();
 		if(multiplereview == null || multiplereview.equals("") || 
-			withKeywords == null || withKeywords.equals("")){
+			withKeywords == null || withKeywords.equals("") || (!withKeywords.equals("true") && !withKeywords.equals("false"))){
 			json.put("statusCode", new Integer(1));
 		}
 		else{
