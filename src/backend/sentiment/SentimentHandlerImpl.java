@@ -34,8 +34,8 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		
 		this.wordscorepairs = new ArrayList<WordScorePair>();
 		
-		String sentiment = getSentimentMaximization(string, lang);
-//		String sentiment = getSentimentAggregation(string, lang);
+//		String sentiment = getSentimentMaximization(string, lang);
+		String sentiment = getSentimentAggregation(string, lang);
 		
 		SentimentWordScorePair swsp = new SentimentWordScorePair(sentiment,this.wordscorepairs);
 		return swsp;
@@ -273,10 +273,14 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		tempPosScore = currentScore;
 								    		scoreprints.add("\t["+tempPosScore+",-1]\n");
 								    		tempwordscorepairs.add(new WordScorePair(word, new Pair(tempPosScore,-1)));
+								    		
+								    		
 								    		// SentiStrength boost version
 								    		tempPosScore = tempPosScore + boosterScore;
+								    		
 								    		// Taboada boost version
 //									    	tempPosScore = tempPosScore * (1 + boosterScore);
+								    		
 								    		
 								    		// für a single word is max. score [5;-5], even with booster
 								    		if(tempPosScore > 5){
@@ -311,10 +315,14 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    		tempNegScore = currentScore;
 							    			scoreprints.add("\t[1,"+tempNegScore+"]\n");
 							    			tempwordscorepairs.add(new WordScorePair(word, new Pair(1,tempNegScore)));
+							    			
+							    			
 							    			// SentiStrength boost version
 							    			tempNegScore = tempNegScore - boosterScore;
+							    			
 									    	// Taboada boost version
 //										    tempNegScore = tempNegScore * (1 + boosterScore);
+							    			
 							    			
 							    			// für a single word is max. score [5;-5], even with booster
 								    		if(tempNegScore < -5){
@@ -428,17 +436,17 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		float absolutetextNeg = Math.abs(textScore.getNegative());
 		
 		
-		if(posDetected)
-			System.out.println("posDetected: TRUE");
-		else
-			System.out.println("posDetected: FALSE");
-		
-		if(negDetected)
-			System.out.println("negDetected: TRUE");
-		else
-			System.out.println("negDetected: FALSE");
-		System.out.println(absolutetextPos);
-		System.out.println(absolutetextNeg);
+//		if(posDetected)
+//			System.out.println("posDetected: TRUE");
+//		else
+//			System.out.println("posDetected: FALSE");
+//		
+//		if(negDetected)
+//			System.out.println("negDetected: TRUE");
+//		else
+//			System.out.println("negDetected: FALSE");
+//		System.out.println(absolutetextPos);
+//		System.out.println(absolutetextNeg);
 		
 		
 		String result = "MISTAKE";
@@ -725,10 +733,14 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    	if(currentScore > 0){
 								    		scoreprints.add("\t["+currentScore+",-1]\n");
 								    		tempwordscorepairs.add(new WordScorePair(word, new Pair(currentScore,-1)));
+								    		
+								    		
 								    		// SentiStrength boost version
 								    		currentScore = currentScore + boosterScore;
+								    		
 								    		// Taboada boost version
-//									    		currentScore = currentScore * (1 + boosterScore);
+//									    	currentScore = currentScore * (1 + boosterScore);
+								    		
 								    		
 								    		// für a single word is max. score [5;-5], even with booster
 								    		if(currentScore > 5){
@@ -746,7 +758,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    			}
 								    			else if((currentScore-4) == 0){
 //								    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
-//								    				tempPosScore = 1;
 								    				tempPosScore = currentScore-4;
 								    				tempNegScore--;
 									    			lastSentimentPositive = false;
@@ -756,8 +767,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 //								    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
 								    				tempPosScore = tempPosScore + (currentScore - 4);
 								    				tempNegScore--;
-//									    			lastSentimentPositive = true;
-//									    			posDetected = true;
 								    				lastSentimentPositive = false;
 									    			negDetected = true;
 								    			}
@@ -775,11 +784,15 @@ public class SentimentHandlerImpl implements SentimentHandler{
 								    	else if(currentScore < 0){
 							    			scoreprints.add("\t[1,"+currentScore+"]\n");
 							    			tempwordscorepairs.add(new WordScorePair(word, new Pair(1,currentScore)));
+							    			
+							    			
 							    			// SentiStrength boost version
 									    	currentScore = currentScore - boosterScore;
+									    	
 									    	// Taboada boost version
 //										    currentScore = currentScore * (1 + boosterScore);
 								    		
+									    	
 									    	// für a single word is max. score [5;-5], even with booster
 								    		if(currentScore < -5){
 								    			currentScore = -5;
@@ -805,7 +818,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 //								    			}
 //								    			else if((currentScore+4) == 0){
 //								    				scoreprints.add("\t[1,"+currentScore+"] -> [1,"+(currentScore+4)+"]\n");
-////							    					tempNegScore = -1;
 //							    					tempNegScore = currentScore+4;
 //							    					tempPosScore++;
 //								    				lastSentimentPositive = true;
@@ -818,7 +830,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 //								    				lastSentimentPositive = true;
 //								    				posDetected = true;
 //								    			}
-//								    			currentScore = 0;
 //								    		}
 								    		else{
 								    			tempNegScore = tempNegScore + currentScore;
@@ -1041,15 +1052,11 @@ public class SentimentHandlerImpl implements SentimentHandler{
 //		testSentences.add("Its a good day :(");
 //		testSentences.add("Host was unfriendly :(");
 //		// Miscellaneous
-//		testSentences.add("The apt was good and the host was nice and kind to me. I was happy with the experience. But the living room was a real catastrophe.");
 //		testSentences.add("nicht sehr spektakulär");
 //		testSentences.add("nicht sehr top");
 //		testSentences.add("leider war die nicht sehr sauber");
 //		testSentences.add("gut und schlecht");
-//		testSentences.add("|Außerordentlich netter Kontakt. Zuverlässiger und verantwortungsvoller Gast. Wohnung sauber und ordentlich hinterlassen. Könnte nicht besser sein. Gerne wieder.");
-//		testSentences.add("John haben wir außer bei Ankunft und Abreise quasi nicht gesehen, trotzdem macht er einen sympatischen Eindruck.");
-//		testSentences.add("|Das &amp;quot;Loft&amp;quot; ist ein einziger Abenteuerspielplatz - für Jugendliche und Erwachsene sicher ganz cool aber für Kinder unter 6 Jahren komplett ungeeignet. Ziemlich enttäuscht bin ich auch über das &amp;quot;verbergen&amp;quot; von wichtigen Infos, wie z. B. das Nicht-vorhandensein einer normalen und einfachen Dusche.    Es gibt einfach sehr viel zu bemängeln:    - Speziell möchte ich etwas zu dem direkten Nachbarn sagen, der nämlich jeden Tag um 14 Uhr uns stockbesoffen ziemlich plump angemacht hat und am vorletzten Tag auch noch ohne anzuklopfen einfach mitten in dem &amp;quot;Loft&amp;quot; stand. Wieso auch immer. Völlig respektlos.    - Die Treppe die nach oben führt ist das unsicherste Gerüst was ich jemals gesehen habe und grade kleine Kinder können leicht abrutschen und von der hohen Treppe fallen.  Außerdem befindet sich auch kein Geländer an der Treppe sowie auf der oberen Etage, das Kind kann praktisch jederzeit von der oberen Ebene auf die untere Ebene fallen.    - Eine richtige Dusche gibt es auch nicht. Es steht eine Regenwassertonne auf der oberen Etage und man kann sich &amp;quot;bequem&amp;quot; mit einem Eimer abduschen. Ja...für ein Kind also immer noch nicht zu gebrauchen.    - Es gibt keinen Wasseranschluss sowie kein warmes Wasser. Warmes Badewasser für die Kleine haben wir dann also in einem Wasserkocher warm gemacht. Dementsprechend schwer war dann auch das Abwaschen.    - Es gab auch nur Wasser aus Kanistern, dass wir jeden Tag selber von der Toilette holen mussten. Den Eimer in dem das Spülwasser nach dem Spülen dann war, konnte man auch diiiiirekt in der Toilette auskippen.    - Neben dem &amp;quot;Loft&amp;quot; befindet sich eine Werkstatt (ist also quasi eh eins) indem ein Mann dann auch um 16 Uhr fleissig angefangen hat zu sägen und zu basteln. Auch auf 2-maliges Bitten seine Arbeit vielleicht freundlicherweise nach 18 Uhr woanders fortzuführen kam nur: &amp;quot;Tja, ich mach heut noch bis 22 Uhr&amp;quot;. Dass unsere Kleine Ihren Schlaf braucht und um 18 Uhr ins Bett geht und das somit nicht möglich war, brauche ich nicht zu erwähnen. Jedoch besserte sich die Situation als sich der Gastgeber selbst beim Werkstattmann meldete.    Obwohl ich von vornerein gesagt habe, dass wir ein 1-Jähriges Kind mitbringen, und der Gastgeber also wusste auf was er sich einlässt, hat er von all den &amp;quot;Mängeln&amp;quot; nicht ein Wort verloren. Absolut unverantwortlich, sorry. Einfach ein No-Go.");
-//		
+
 //		for(String sentence: testSentences){
 //			System.out.println(sentiHandler.getSentimentMaximization(sentence, "en"));
 //			System.out.println(sentiHandler.getSentimentAggregation(sentence, "en"));
@@ -1061,7 +1068,6 @@ public class SentimentHandlerImpl implements SentimentHandler{
 //		File file = new File("C:/Users/Pazifik/Desktop/testreviews.txt");
 //		sentiHandler.getSentiment(file, true);
 //		sentiHandler.getSentiment(file, false);
-		
 		
 		
 		
