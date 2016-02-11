@@ -113,6 +113,11 @@ public class Language {
 		languages.put("zh_tw","TRADITIONAL_CHINESE");
     }
 	
+	/**
+	 * Returns the language from a language code
+	 * @param lang
+	 * @return
+	 */
 	public static String get(String lang){
 		String language = "";
 		for(Map.Entry<String, String> entry : languages.entrySet()){

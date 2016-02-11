@@ -13,6 +13,11 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
+/**
+ * Demo class for sending a request for sentiment analysis
+ * @author Pazifik
+ *
+ */
 public class PostSimulator {
 
 	// this is your target url
@@ -24,9 +29,8 @@ public class PostSimulator {
 
     	// Request parameters and other properties.
     	List<NameValuePair> params = new ArrayList<NameValuePair>(2);
-//    	params.add(new BasicNameValuePair("reviewtext", "good"));
-//    	params.add(new BasicNameValuePair("reviewtext", "schöner tag"));
-    	params.add(new BasicNameValuePair("reviewtext", "schöner tag heute.\n Very bad day"));
+
+    	params.add(new BasicNameValuePair("reviewtext", "schöner tag heute."));
     	params.add(new BasicNameValuePair("keywords", "true"));
     	
     	// Set encoding to UTF-8 IMPORTANT!!!

@@ -34,6 +34,7 @@ public class SentimentHandlerImpl implements SentimentHandler{
 		
 		this.wordscorepairs = new ArrayList<WordScorePair>();
 		
+		// Aggregation is chosen based on better results in evaluation
 //		String sentiment = getSentimentMaximization(string, lang);
 		String sentiment = getSentimentAggregation(string, lang);
 		
@@ -1005,9 +1006,9 @@ public class SentimentHandlerImpl implements SentimentHandler{
 	
 	
 	public static void main(String[] args) throws IOException {
-//		SentimentHandlerImpl sentiHandler = new SentimentHandlerImpl("WebContent");
+		SentimentHandlerImpl sentiHandler = new SentimentHandlerImpl("WebContent");
 //		
-//		ArrayList<String> testSentences = new ArrayList<String>();
+		ArrayList<String> testSentences = new ArrayList<String>();
 //		// no sentiment
 //		testSentences.add("I go to school today.");
 //		// positive sentiment
@@ -1057,19 +1058,14 @@ public class SentimentHandlerImpl implements SentimentHandler{
 //		testSentences.add("leider war die nicht sehr sauber");
 //		testSentences.add("gut und schlecht");
 
-//		for(String sentence: testSentences){
-//			System.out.println(sentiHandler.getSentimentMaximization(sentence, "en"));
-//			System.out.println(sentiHandler.getSentimentAggregation(sentence, "en"));
+		for(String sentence: testSentences){
+			System.out.println(sentiHandler.getSentimentMaximization(sentence, "en"));
+			System.out.println(sentiHandler.getSentimentAggregation(sentence, "en"));
 //			
 //			System.out.println(sentiHandler.getSentimentMaximization(sentence, "de"));
 //			System.out.println(sentiHandler.getSentimentAggregation(sentence, "de"));
-//		}
-//		
-//		File file = new File("C:/Users/Pazifik/Desktop/testreviews.txt");
-//		sentiHandler.getSentiment(file, true);
-//		sentiHandler.getSentiment(file, false);
-		
-		
+		}
+
 		
 //		boolean x = match("enttäuscht","enttäusch*");
 //		if(x){

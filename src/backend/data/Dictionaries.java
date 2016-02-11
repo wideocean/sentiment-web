@@ -1,7 +1,11 @@
 package backend.data;
 import java.io.File;
 
-
+/**
+ * This class is responsible for the selection of the dictionaries
+ * @author Pazifik
+ *
+ */
 public class Dictionaries {
 
 	public static String filepath;
@@ -30,6 +34,9 @@ public class Dictionaries {
 		return emoticonfile;
 	}
 	
+	/**
+	 * Specifies the filepaths for the ENGLISH dictionaries
+	 */
 	public void loadEN(){
 		
 		// SentiStrength
@@ -55,6 +62,9 @@ public class Dictionaries {
 		
 	}
 	
+	/**
+	 * Specifies the filepaths for the GERMAN dictionaries
+	 */
 	public void loadDE(){
 		// SentiStrength
 //		dictfile = new File(filepath + "/WEB-INF/dictionaries/de/SentiStrength/EmotionLookupTable.txt");

@@ -45,6 +45,11 @@ import java.io.InputStreamReader;
 
 import org.mozilla.universalchardet.UniversalDetector;
 
+/**
+ * This class is responsible for the correct handling of the encoding
+ * @author Pazifik
+ *
+ */
 public class CharsetReader {
 	
 	public CharsetReader(){
