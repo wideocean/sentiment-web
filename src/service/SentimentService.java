@@ -1,5 +1,7 @@
 package service;
 
+import java.io.IOException;
+
 import model.SentimentWordScorePair;
 
 public interface SentimentService {
@@ -14,6 +16,6 @@ public interface SentimentService {
 	 *         positive, "neg" for negative, "neu" for neutral and all sentiment
 	 *         words with its scores
 	 */
-	public SentimentWordScorePair getSentiment(String string, String lang);
+	public SentimentWordScorePair getSentimentScore(String string, String lang) throws IOException;
 
 }

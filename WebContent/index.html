@@ -26,8 +26,8 @@ false = overall sentiment
 <br><br>
 DEMO
 <br>
-<form action="/sentiment-web/detectSentiment" method="post" accept-charset="UTF-8">
-<textarea rows="10" cols="80" name="reviewtext" placeholder="1 review per line"></textarea>
+<form action="/sentiment-web/sentiment" method="get" accept-charset="UTF-8">
+<textarea rows="10" cols="80" name="text" placeholder="1 review per line"></textarea>
 <input type="radio" name="keywords" value="true"> true
 <input type="radio" name="keywords" value="false" checked> false
 <input type="submit" name="submit" value="detectSentiment">

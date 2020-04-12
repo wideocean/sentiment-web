@@ -11,15 +11,13 @@ public class LanguageServiceImpl implements LanguageService {
 
 	private LanguageDetector detector;
 
-	public LanguageServiceImpl() {
+	public LanguageServiceImpl() throws IOException {
 		detector = LanguageDetector.getDefaultLanguageDetector();
 		Set<String> languages = new HashSet<String>();
 		Collections.addAll(languages, "de", "en");
-		try {
-			detector = detector.loadModels(languages);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		detector = detector.loadModels(languages);
+
 	}
 
 	@Override

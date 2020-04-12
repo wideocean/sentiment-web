@@ -11,14 +11,14 @@ import java.text.MessageFormat;
  */
 public class Dictionaries {
 
-	public static String filepath;
-	public static File dictfile;
-	public static File negationfile;
-	public static File boosterfile;
-	public static File emoticonfile;
+	private String filepath;
+	private File dictfile;
+	private File negationfile;
+	private File boosterfile;
+	private File emoticonfile;
 
 	public Dictionaries(String filepath) {
-		Dictionaries.filepath = filepath;
+		this.filepath = filepath;
 	}
 
 	public File getDictfile() {
