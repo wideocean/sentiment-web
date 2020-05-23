@@ -1,19 +1,20 @@
 package model;
 
 /**
- * Data Structure for storing Sentiment Scores.
- * Stores a positive and a negative value.
+ * Data Structure for storing Sentiment Scores. Stores a positive and a negative
+ * value.
+ * 
  * @author Pazifik
  *
  */
 public class Pair {
-	
+
 	private float pos;
 	private float neg;
-	
-	public Pair(float pos, float neg){
-		this.pos=pos;
-		this.neg=neg;
+
+	public Pair(float pos, float neg) {
+		this.pos = pos;
+		this.neg = neg;
 	}
 
 	public float getPositive() {
@@ -31,9 +32,10 @@ public class Pair {
 	public void setNegative(float neg) {
 		this.neg = neg;
 	}
-	
-	public String toString(){
-		return "["+pos+","+neg+"]";
+
+	@Override
+	public String toString() {
+		return "Pair [pos=" + pos + ", neg=" + neg + "]";
 	}
-	
+
 }
