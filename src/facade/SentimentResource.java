@@ -14,8 +14,8 @@ import javax.ws.rs.core.Response;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import model.Sentiment;
-import model.SentimentJsonResult;
-import model.SentimentWordScorePair;
+import model.SentimentResult;
+import model.SentimentScore;
 import model.WordScorePair;
 import service.LanguageService;
 import service.LanguageServiceImpl;
@@ -54,7 +54,7 @@ public class SentimentResource {
 
 				sentiment = sentimentService.getSentimentScore(e, lang).getSentiment();
 
-				SentimentJsonResult sentimentResult = new SentimentJsonResult(lineNumber, sentiment, lang, null);
+				SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, null);
 
 				result = mapper.writeValueAsString(sentimentResult);
 			}
@@ -86,14 +86,14 @@ public class SentimentResource {
 			for (String e : reviews) {
 				lineNumber++;
 				String lang = languageService.getLanguage(e);
-				SentimentWordScorePair swsp;
+				SentimentScore swsp;
 
 				swsp = sentimentService.getSentimentScore(e, lang);
 
 				Sentiment sentiment = swsp.getSentiment();
 				List<WordScorePair> keywords = swsp.getWordScorePairs();
 
-				SentimentJsonResult sentimentResult = new SentimentJsonResult(lineNumber, sentiment, lang, keywords);
+				SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, keywords);
 
 				result = mapper.writeValueAsString(sentimentResult);
 			}

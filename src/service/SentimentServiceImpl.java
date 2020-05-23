@@ -12,13 +12,14 @@ import model.CharsetDetector;
 import model.Dictionaries;
 import model.Pair;
 import model.Sentiment;
-import model.SentimentWordScorePair;
+import model.SentimentScore;
 import model.WordScorePair;
 
 public class SentimentServiceImpl implements SentimentService {
 
 	private Dictionaries dictionaries;
 	private ArrayList<WordScorePair> wordscorepairs;
+	private Pair finalScore;
 
 	public SentimentServiceImpl(String filepath) {
 		dictionaries = new Dictionaries(filepath);
@@ -26,14 +27,14 @@ public class SentimentServiceImpl implements SentimentService {
 	}
 
 	@Override
-	public SentimentWordScorePair getSentimentScore(String string, String lang) throws IOException {
+	public SentimentScore getSentimentScore(String string, String lang) throws IOException {
 
 		this.wordscorepairs = new ArrayList<WordScorePair>();
 
 		// Aggregation is chosen based on better results in evaluation
 		Sentiment sentiment = getSentimentAggregation(string, lang);
 
-		SentimentWordScorePair swsp = new SentimentWordScorePair(sentiment, this.wordscorepairs);
+		SentimentScore swsp = new SentimentScore(sentiment, this.finalScore, this.wordscorepairs);
 		return swsp;
 	}
 
@@ -311,7 +312,7 @@ public class SentimentServiceImpl implements SentimentService {
 											tempwordscorepairs.add(new WordScorePair(word, new Pair(1, currentScore)));
 
 											// SentiStrength boost version
-											currentScore = currentScore - boosterScore;
+											currentScore = currentScore + boosterScore;
 
 											// Taboada boost version
 //											    currentScore = currentScore * (1 + boosterScore);
@@ -422,6 +423,7 @@ public class SentimentServiceImpl implements SentimentService {
 		Pair textScore = new Pair(0, 0);
 		textScore.setPositive(pos / (float) sentenceScores.size());
 		textScore.setNegative(neg / (float) sentenceScores.size());
+		finalScore = textScore;
 		float absolutetextPos = Math.abs(textScore.getPositive());
 		float absolutetextNeg = Math.abs(textScore.getNegative());
 
@@ -430,7 +432,7 @@ public class SentimentServiceImpl implements SentimentService {
 		// consider it as neutral (NEU)
 		if (posDetected && negDetected) {
 			float difference = Math.abs(absolutetextPos - absolutetextNeg);
-			if (difference <= 0.5) {
+			if (difference <= 1) {
 				System.out.println("NEUTRAL" + "\t" + textScore.toString());
 				result = Sentiment.NEU;
 			} else if (absolutetextPos > absolutetextNeg) {
@@ -495,73 +497,6 @@ public class SentimentServiceImpl implements SentimentService {
 		} catch (NumberFormatException e) {
 			return false;
 		}
-	}
-
-	public static void main(String[] args) throws IOException {
-		SentimentServiceImpl sentiHandler = new SentimentServiceImpl("WebContent");
-//		
-		ArrayList<String> testSentences = new ArrayList<String>();
-//		// no sentiment
-//		testSentences.add("I go to school today.");
-//		// positive sentiment
-//		testSentences.add("good day");
-//		// positive & negative sentiment
-//		testSentences.add("Good day, bad weather");
-//		testSentences.add("Its bad weather. Good day");
-//		testSentences.add("good day, horrible weather");
-//		testSentences.add("I love and hate dogs.");
-//		testSentences.add("She is nice but also horrible.");
-//		testSentences.add("Amazing and good day. Its devastating weather");
-//		testSentences.add("Excellent day, horrible and bad weather");
-//		testSentences.add("Excellent apt, bad host and bad choice");
-//		// Booster
-//		testSentences.add("very good day");
-//		testSentences.add("very bad day");
-//		testSentences.add("very slightly bad day");
-//		testSentences.add("sometimes good day");
-//		testSentences.add("sometimes bad day");
-//		testSentences.add("fucking very absolutely incredibly good day");
-//		// Negation
-//		testSentences.add("not good day");
-//		testSentences.add("not bliss day");
-//		testSentences.add("not devastating day");
-//		testSentences.add("not bad day");
-//		testSentences.add("Today is not a good day");
-//		testSentences.add("Unfortunately I was not able to meet the wonderful and lovely host.");
-//		// Negation + Booster
-//		testSentences.add("Everything is not very good.");
-//		testSentences.add("Everything is not very amazing.");
-//		testSentences.add("not a really good day");
-//		testSentences.add("He was not a really helpful person and also not friendly.");
-//		// Ausrufezeichen
-//		testSentences.add("Just a normal day!");
-//		testSentences.add("Its a good day!");
-//		testSentences.add("Host was unfriendly!");
-//		testSentences.add("Good location but unfriendly host!");
-//		testSentences.add("Good location but very unfriendly host!");
-//		// Smileys
-//		testSentences.add("hello :D");
-//		testSentences.add("It was a nice experience (^.^)");
-//		testSentences.add("Its a good day :(");
-//		testSentences.add("Host was unfriendly :(");
-//		// Miscellaneous
-//		testSentences.add("nicht sehr spektakul�r");
-//		testSentences.add("nicht sehr top");
-//		testSentences.add("leider war die nicht sehr sauber");
-//		testSentences.add("gut und schlecht");
-
-		for (String sentence : testSentences) {
-			System.out.println(sentiHandler.getSentimentAggregation(sentence, "en"));
-//			
-//			System.out.println(sentiHandler.getSentimentAggregation(sentence, "de"));
-		}
-
-//		boolean x = match("entt�uscht","entt�usch*");
-//		if(x){
-//			System.out.println("TRUE");
-//		}
-//		else{System.out.println("FALSE");}
-
 	}
 
 }

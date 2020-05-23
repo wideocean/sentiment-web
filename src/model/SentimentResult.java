@@ -10,16 +10,18 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * @author Pazifik
  *
  */
-public class SentimentJsonResult {
+public class SentimentResult {
 
 	private int lineNumber;
 	private Sentiment sentiment;
 	private String lang;
-
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private List<WordScorePair> keywords;
 
-	public SentimentJsonResult(int lineNumber, Sentiment sentiment, String lang, List<WordScorePair> keywords) {
+	public SentimentResult() {
+	};
+
+	public SentimentResult(int lineNumber, Sentiment sentiment, String lang, List<WordScorePair> keywords) {
 		this.lineNumber = lineNumber;
 		this.sentiment = sentiment;
 		this.lang = lang;
