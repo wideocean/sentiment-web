@@ -3,9 +3,17 @@ package model;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 /**
- * Data Structure for storing a sentiment word and its score. Stores a string
- * (sentiment word) and a Pair (sentiment score) OR Stores a string (sentiment
- * word) and a float (score) (e.g. Booster-, Negating- or Emoticon word )
+ * Data Structure for storing a sentiment word and its score. <br>
+ * Stores a string (sentiment word) and a Pair (sentiment score) OR <br>
+ * Stores a string (sentiment word) and a float (score) (e.g. Booster-,
+ * Negating- or Emoticon word ).
+ * 
+ * Examples: <br>
+ * for the word "good": <br>
+ * word = good ; score = 0.0 ; scorePair = [2.0,-1.0]
+ * 
+ * for the booster "very": <br>
+ * word = very ; score = 1.0 ; scorePair = null
  * 
  * @author Pazifik
  *
@@ -75,6 +83,12 @@ public class WordScorePair {
 
 	public void setNegation(String negation) {
 		this.negation = negation;
+	}
+
+	@Override
+	public String toString() {
+		return "WordScorePair [word=" + word + ", scorePair=" + scorePair + ", score=" + score + ", negation="
+				+ negation + "]";
 	}
 
 }
