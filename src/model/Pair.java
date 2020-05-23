@@ -1,5 +1,7 @@
 package model;
 
+import java.util.Objects;
+
 /**
  * Data Structure for storing Sentiment Scores. Stores a positive and a negative
  * value.
@@ -36,6 +38,24 @@ public class Pair {
 	@Override
 	public String toString() {
 		return "Pair [pos=" + pos + ", neg=" + neg + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(neg, pos);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Pair other = (Pair) obj;
+		return Float.floatToIntBits(neg) == Float.floatToIntBits(other.neg)
+				&& Float.floatToIntBits(pos) == Float.floatToIntBits(other.pos);
 	}
 
 }
