@@ -14,6 +14,9 @@ public class Pair {
 	private float pos;
 	private float neg;
 
+	public Pair() {
+	}
+
 	public Pair(float pos, float neg) {
 		this.pos = pos;
 		this.neg = neg;
