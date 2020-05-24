@@ -9,15 +9,15 @@ import java.util.Objects;
  * @author Pazifik
  *
  */
-public class Pair {
+public class Score {
 
 	private float pos;
 	private float neg;
 
-	public Pair() {
+	public Score() {
 	}
 
-	public Pair(float pos, float neg) {
+	public Score(float pos, float neg) {
 		this.pos = pos;
 		this.neg = neg;
 	}
@@ -40,7 +40,7 @@ public class Pair {
 
 	@Override
 	public String toString() {
-		return "Pair [pos=" + pos + ", neg=" + neg + "]";
+		return "Score [pos=" + pos + ", neg=" + neg + "]";
 	}
 
 	@Override
@@ -56,7 +56,7 @@ public class Pair {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Pair other = (Pair) obj;
+		Score other = (Score) obj;
 		return Float.floatToIntBits(neg) == Float.floatToIntBits(other.neg)
 				&& Float.floatToIntBits(pos) == Float.floatToIntBits(other.pos);
 	}

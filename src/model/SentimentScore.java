@@ -11,10 +11,10 @@ import java.util.ArrayList;
 public class SentimentScore {
 
 	private Sentiment sentiment;
-	private Pair finalScore;
-	private ArrayList<WordScorePair> wordScorePairs;
+	private Score finalScore;
+	private ArrayList<WordScore> wordScorePairs;
 
-	public SentimentScore(Sentiment sentiment, Pair finalScore, ArrayList<WordScorePair> wordScorePairs) {
+	public SentimentScore(Sentiment sentiment, Score finalScore, ArrayList<WordScore> wordScorePairs) {
 		this.sentiment = sentiment;
 		this.finalScore = finalScore;
 		this.wordScorePairs = wordScorePairs;
@@ -28,19 +28,19 @@ public class SentimentScore {
 		this.sentiment = sentiment;
 	}
 
-	public Pair getFinalScore() {
+	public Score getFinalScore() {
 		return finalScore;
 	}
 
-	public void setFinalScore(Pair finalScore) {
+	public void setFinalScore(Score finalScore) {
 		this.finalScore = finalScore;
 	}
 
-	public ArrayList<WordScorePair> getWordScorePairs() {
+	public ArrayList<WordScore> getWordScorePairs() {
 		return wordScorePairs;
 	}
 
-	public void setWordScorePairs(ArrayList<WordScorePair> wordScorePairs) {
+	public void setWordScorePairs(ArrayList<WordScore> wordScorePairs) {
 		this.wordScorePairs = wordScorePairs;
 	}
 

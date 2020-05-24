@@ -13,10 +13,10 @@ import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import model.Pair;
+import model.Score;
 import model.Sentiment;
 import model.SentimentResult;
-import model.WordScorePair;
+import model.WordScore;
 
 class HttpResourceTest {
 	private final String URL = "http://localhost:8080/sentiment-web";
@@ -60,18 +60,18 @@ class HttpResourceTest {
 		assertThat(sentimentResult.getLineNumber()).isEqualTo(1);
 		assertThat(sentimentResult.getLang()).isEqualTo(EN);
 		assertThat(sentimentResult.getSentiment()).isEqualTo(Sentiment.NEG);
-		List<WordScorePair> keywords = sentimentResult.getKeywords();
+		List<WordScore> keywords = sentimentResult.getKeywords();
 		assertThat(keywords).anySatisfy(wordScore -> {
 			assertThat(wordScore.getWord()).isEqualTo("not");
 			assertThat(wordScore.getNegation()).isTrue();
 		});
 		assertThat(keywords).anySatisfy(wordScore -> {
 			assertThat(wordScore.getWord()).isEqualTo("very");
-			assertThat(wordScore.getScore()).isEqualTo(1);
+			assertThat(wordScore.getBoosterScore()).isEqualTo(1);
 		});
 		assertThat(keywords).anySatisfy(wordScore -> {
 			assertThat(wordScore.getWord()).isEqualTo("good");
-			assertThat(wordScore.getScorePair()).isEqualTo(new Pair(2, -1));
+			assertThat(wordScore.getScore()).isEqualTo(new Score(2, -1));
 		});
 	}
 

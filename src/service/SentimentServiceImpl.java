@@ -10,31 +10,31 @@ import java.util.Locale;
 
 import model.CharsetDetector;
 import model.Dictionaries;
-import model.Pair;
+import model.Score;
 import model.Sentiment;
 import model.SentimentScore;
-import model.WordScorePair;
+import model.WordScore;
 
 public class SentimentServiceImpl implements SentimentService {
 
 	private Dictionaries dictionaries;
-	private ArrayList<WordScorePair> wordscorepairs;
-	private Pair finalScore;
+	private ArrayList<WordScore> wordScores;
+	private Score finalScore;
 
 	public SentimentServiceImpl(String filepath) {
 		dictionaries = new Dictionaries(filepath);
-		wordscorepairs = new ArrayList<WordScorePair>();
+		wordScores = new ArrayList<WordScore>();
 	}
 
 	@Override
 	public SentimentScore getSentimentScore(String string, String lang) throws IOException {
 
-		this.wordscorepairs = new ArrayList<WordScorePair>();
+		this.wordScores = new ArrayList<WordScore>();
 
 		// Aggregation is chosen based on better results in evaluation
 		Sentiment sentiment = getSentimentAggregation(string, lang);
 
-		SentimentScore swsp = new SentimentScore(sentiment, this.finalScore, this.wordscorepairs);
+		SentimentScore swsp = new SentimentScore(sentiment, this.finalScore, this.wordScores);
 		return swsp;
 	}
 
@@ -92,7 +92,7 @@ public class SentimentServiceImpl implements SentimentService {
 			index = bisentence.current();
 		}
 
-		ArrayList<Pair> sentenceScores = new ArrayList<Pair>();
+		ArrayList<Score> sentenceScores = new ArrayList<Score>();
 		boolean printed = false;
 
 		boolean posDetected = false;
@@ -148,7 +148,7 @@ public class SentimentServiceImpl implements SentimentService {
 							}
 							float emoticonValue = Float.parseFloat(emoticonentries[1]);
 							emoticonScore = emoticonScore + emoticonValue;
-							wordscorepairs.add(new WordScorePair(emoticonentries[0], emoticonValue));
+							wordScores.add(new WordScore(emoticonentries[0], emoticonValue));
 						}
 					}
 				}
@@ -176,7 +176,7 @@ public class SentimentServiceImpl implements SentimentService {
 							String[] negationentries = negationline.split("\\t");
 							if (match(word, negationentries[0])) {
 								sysprints.add(word + "\n");
-								wordscorepairs.add(new WordScorePair(word, true));
+								wordScores.add(new WordScore(word, true));
 								negateSentiment = true;
 								negationDetected = true;
 								negationCounter = 0;
@@ -222,7 +222,7 @@ public class SentimentServiceImpl implements SentimentService {
 						continue;
 					}
 					if (!boosterWord.equals("")) {
-						wordscorepairs.add(new WordScorePair(boosterWord, boosterScore));
+						wordScores.add(new WordScore(boosterWord, boosterScore));
 						boosterWord = "";
 					}
 
@@ -231,7 +231,7 @@ public class SentimentServiceImpl implements SentimentService {
 					float tempNegScore = 0;
 
 					ArrayList<String> scoreprints = new ArrayList<String>();
-					ArrayList<WordScorePair> tempwordscorepairs = new ArrayList<WordScorePair>();
+					ArrayList<WordScore> tempwordscorepairs = new ArrayList<WordScore>();
 
 					// Iterate through Dictionary-File
 					lineNumber = 0;
@@ -250,7 +250,7 @@ public class SentimentServiceImpl implements SentimentService {
 									if (dictentries[0].length() > dictwordlength) {
 										dictwordlength = dictentries[0].length();
 										scoreprints = new ArrayList<String>();
-										tempwordscorepairs = new ArrayList<WordScorePair>();
+										tempwordscorepairs = new ArrayList<WordScore>();
 										tempPosScore = 0;
 										tempNegScore = 0;
 
@@ -264,7 +264,7 @@ public class SentimentServiceImpl implements SentimentService {
 										// if positive
 										if (currentScore > 0) {
 											scoreprints.add("\t[" + currentScore + ",-1]\n");
-											tempwordscorepairs.add(new WordScorePair(word, new Pair(currentScore, -1)));
+											tempwordscorepairs.add(new WordScore(word, new Score(currentScore, -1)));
 
 											// SentiStrength boost version
 											currentScore = currentScore + boosterScore;
@@ -310,7 +310,7 @@ public class SentimentServiceImpl implements SentimentService {
 										// if negative
 										else if (currentScore < 0) {
 											scoreprints.add("\t[1," + currentScore + "]\n");
-											tempwordscorepairs.add(new WordScorePair(word, new Pair(1, currentScore)));
+											tempwordscorepairs.add(new WordScore(word, new Score(1, currentScore)));
 
 											// SentiStrength boost version
 											currentScore = currentScore + boosterScore;
@@ -372,7 +372,7 @@ public class SentimentServiceImpl implements SentimentService {
 
 					boosterScore = 0;
 					sysprints.addAll(scoreprints);
-					wordscorepairs.addAll(tempwordscorepairs);
+					wordScores.addAll(tempwordscorepairs);
 					if (!printed) {
 						sysprints.add(word + "\n");
 					}
@@ -403,7 +403,7 @@ public class SentimentServiceImpl implements SentimentService {
 				negDetected = true;
 			}
 
-			Pair sentenceScore = new Pair(posScore, negScore);
+			Score sentenceScore = new Score(posScore, negScore);
 			sentenceScores.add(sentenceScore);
 			sysprints.add("Sentence: " + sentenceScore.toString() + "\n");
 
@@ -416,12 +416,12 @@ public class SentimentServiceImpl implements SentimentService {
 
 		float pos = 0;
 		float neg = 0;
-		for (Pair i : sentenceScores) {
+		for (Score i : sentenceScores) {
 			pos = pos + i.getPositive();
 			neg = neg + i.getNegative();
 		}
 		// Consider only the absolute value
-		Pair textScore = new Pair(0, 0);
+		Score textScore = new Score(0, 0);
 		textScore.setPositive(pos / (float) sentenceScores.size());
 		textScore.setNegative(neg / (float) sentenceScores.size());
 		finalScore = textScore;

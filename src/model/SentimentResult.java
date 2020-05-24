@@ -16,12 +16,12 @@ public class SentimentResult {
 	private Sentiment sentiment;
 	private String lang;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private List<WordScorePair> keywords;
+	private List<WordScore> keywords;
 
 	public SentimentResult() {
 	};
 
-	public SentimentResult(int lineNumber, Sentiment sentiment, String lang, List<WordScorePair> keywords) {
+	public SentimentResult(int lineNumber, Sentiment sentiment, String lang, List<WordScore> keywords) {
 		this.lineNumber = lineNumber;
 		this.sentiment = sentiment;
 		this.lang = lang;
@@ -52,11 +52,11 @@ public class SentimentResult {
 		this.lang = lang;
 	}
 
-	public List<WordScorePair> getKeywords() {
+	public List<WordScore> getKeywords() {
 		return keywords;
 	}
 
-	public void setKeywords(List<WordScorePair> keywords) {
+	public void setKeywords(List<WordScore> keywords) {
 		this.keywords = keywords;
 	}
 

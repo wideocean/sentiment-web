@@ -16,7 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import model.Sentiment;
 import model.SentimentResult;
 import model.SentimentScore;
-import model.WordScorePair;
+import model.WordScore;
 import service.LanguageService;
 import service.LanguageServiceImpl;
 import service.SentimentService;
@@ -91,7 +91,7 @@ public class SentimentResource {
 				swsp = sentimentService.getSentimentScore(e, lang);
 
 				Sentiment sentiment = swsp.getSentiment();
-				List<WordScorePair> keywords = swsp.getWordScorePairs();
+				List<WordScore> keywords = swsp.getWordScorePairs();
 
 				SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, keywords);
 
