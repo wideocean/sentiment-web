@@ -146,8 +146,9 @@ public class SentimentServiceImpl implements SentimentService {
 								throw new IOException("Sentiment Score for \"" + e
 										+ "\" has to be Integer/Float, line: " + lineNumber);
 							}
-							emoticonScore = emoticonScore + Float.parseFloat(emoticonentries[1]);
-							wordscorepairs.add(new WordScorePair(emoticonentries[0], emoticonentries[1]));
+							float emoticonValue = Float.parseFloat(emoticonentries[1]);
+							emoticonScore = emoticonScore + emoticonValue;
+							wordscorepairs.add(new WordScorePair(emoticonentries[0], emoticonValue));
 						}
 					}
 				}
@@ -175,7 +176,7 @@ public class SentimentServiceImpl implements SentimentService {
 							String[] negationentries = negationline.split("\\t");
 							if (match(word, negationentries[0])) {
 								sysprints.add(word + "\n");
-								wordscorepairs.add(new WordScorePair(word, "negation"));
+								wordscorepairs.add(new WordScorePair(word, true));
 								negateSentiment = true;
 								negationDetected = true;
 								negationCounter = 0;

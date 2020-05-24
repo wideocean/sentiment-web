@@ -41,6 +41,15 @@ class SentimentTest {
 		};
 	}
 
+	private Consumer<WordScorePair> isNegation(String word) {
+		return n -> {
+			assertThat(n.getWord()).isEqualTo(word);
+			assertThat(n.getScore()).isEqualTo(0);
+			assertThat(n.getScorePair()).isEqualTo(null);
+			assertThat(n.getNegation()).isTrue();
+		};
+	}
+
 	@Test
 	void testNoSentiment() throws IOException {
 		String sentence = "I go to school today.";
@@ -168,10 +177,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("not");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isNull();
-			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
+			isNegation("not");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			isSentimentWord("good", new Pair(2, -1));
@@ -187,10 +193,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("not");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isNull();
-			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
+			isNegation("not");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			isSentimentWord("bad", new Pair(1, -2));
@@ -206,10 +209,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("not");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isNull();
-			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
+			isNegation("not");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			isSentimentWord("devastating", new Pair(1, -5));
@@ -228,10 +228,7 @@ class SentimentTest {
 			isSentimentWord("Unfortunately", new Pair(1, -2));
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("not");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isNull();
-			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
+			isNegation("not");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			isSentimentWord("wonderful", new Pair(3, -1));
@@ -247,10 +244,7 @@ class SentimentTest {
 		wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("not");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isNull();
-			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
+			isNegation("not");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			isBooster("really", 1);
@@ -272,10 +266,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("not");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isNull();
-			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
+			isNegation("not");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			isBooster("very", 1);
@@ -294,10 +285,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("not");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isNull();
-			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
+			isNegation("not");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			isBooster("very", 1);
@@ -359,9 +347,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo(":D");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(null);
+			isBooster(":D", 1);
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, 0));
 	}
@@ -374,19 +360,13 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo(":D");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(null);
+			isBooster(":D", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo(":)");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(null);
+			isBooster(":)", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("(^.^)");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(null);
+			isBooster("(^.^)", 1);
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, 0));
 	}

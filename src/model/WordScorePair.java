@@ -15,6 +15,9 @@ import com.fasterxml.jackson.annotation.JsonInclude;
  * for the booster "very": <br>
  * word = very ; score = 1.0 ; scorePair = null
  * 
+ * for the negation "not": <br>
+ * word = not ; score = 0.0 ; scorePair = null ; negation = true
+ * 
  * @author Pazifik
  *
  */
@@ -29,9 +32,9 @@ public class WordScorePair {
 	private float score;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private String negation;
+	private boolean negation;
 
-	public WordScorePair(String word, Pair scorePair, float score, String negation) {
+	public WordScorePair(String word, Pair scorePair, float score, boolean negation) {
 		this.word = word;
 		this.scorePair = scorePair;
 		this.score = score;
@@ -48,7 +51,7 @@ public class WordScorePair {
 		this.score = score;
 	}
 
-	public WordScorePair(String word, String negation) {
+	public WordScorePair(String word, boolean negation) {
 		this.word = word;
 		this.negation = negation;
 	}
@@ -77,11 +80,11 @@ public class WordScorePair {
 		this.score = score;
 	}
 
-	public String getNegation() {
+	public boolean getNegation() {
 		return negation;
 	}
 
-	public void setNegation(String negation) {
+	public void setNegation(boolean negation) {
 		this.negation = negation;
 	}
 
