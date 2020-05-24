@@ -18,6 +18,14 @@ import model.Sentiment;
 import model.SentimentResult;
 import model.WordScore;
 
+/**
+ * Tests regarding http resources.
+ * 
+ * NOTE: Requires the web service to be already running.
+ * 
+ * @author Pazifik
+ *
+ */
 class HttpResourceTest {
 	private final String URL = "http://localhost:8080/sentiment-web";
 	private final String EN = "en";
