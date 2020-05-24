@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,6 +23,22 @@ class SentimentTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		sentiHandler = new SentimentServiceImpl("WebContent");
+	}
+
+	private Consumer<WordScorePair> isSentimentWord(String word, Pair score) {
+		return n -> {
+			assertThat(n.getWord()).isEqualTo(word);
+			assertThat(n.getScore()).isEqualTo(0);
+			assertThat(n.getScorePair()).isEqualTo(score);
+		};
+	}
+
+	private Consumer<WordScorePair> isBooster(String word, float score) {
+		return n -> {
+			assertThat(n.getWord()).isEqualTo(word);
+			assertThat(n.getScore()).isEqualTo(score);
+			assertThat(n.getScorePair()).isEqualTo(null);
+		};
 	}
 
 	@Test
@@ -71,14 +88,10 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("very");
-			assertThat(wordScorePair.getScore()).isEqualTo(1);
-			assertThat(wordScorePair.getScorePair()).isNull();
+			isBooster("very", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("good");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("good", new Pair(2, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(3, -1));
 	}
@@ -91,14 +104,10 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("sometimes");
-			assertThat(wordScorePair.getScore()).isEqualTo(-1);
-			assertThat(wordScorePair.getScorePair()).isNull();
+			isBooster("sometimes", -1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("good");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("good", new Pair(2, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -1));
 	}
@@ -111,9 +120,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("slightly");
-			assertThat(wordScorePair.getScore()).isEqualTo(-1);
-			assertThat(wordScorePair.getScorePair()).isNull();
+			isBooster("slightly", -1);
 		});
 		assertThat(wordScorePairs).allSatisfy(wordScorePair -> {
 			assertThat(wordScorePair.getWord()).isNotEqualTo("very");
@@ -129,14 +136,10 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("very");
-			assertThat(wordScorePair.getScore()).isEqualTo(1);
-			assertThat(wordScorePair.getScorePair()).isNull();
+			isBooster("very", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("phenomenal");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(5, -1));
+			isSentimentWord("phenomenal", new Pair(5, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(5, -1));
 	}
@@ -149,14 +152,10 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("very");
-			assertThat(wordScorePair.getScore()).isEqualTo(1);
-			assertThat(wordScorePair.getScorePair()).isNull();
+			isBooster("very", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("good");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("good", new Pair(2, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(2, -1));
 	}
@@ -175,9 +174,7 @@ class SentimentTest {
 			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("good");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("good", new Pair(2, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -2));
 	}
@@ -196,9 +193,7 @@ class SentimentTest {
 			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("bad");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(1, -2));
+			isSentimentWord("bad", new Pair(1, -2));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -1));
 	}
@@ -217,9 +212,7 @@ class SentimentTest {
 			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("devastating");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(1, -5));
+			isSentimentWord("devastating", new Pair(1, -5));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -1));
 	}
@@ -232,9 +225,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("Unfortunately");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(1, -2));
+			isSentimentWord("Unfortunately", new Pair(1, -2));
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
 			assertThat(wordScorePair.getWord()).isEqualTo("not");
@@ -243,20 +234,16 @@ class SentimentTest {
 			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("wonderful");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(3, -1));
+			isSentimentWord("wonderful", new Pair(3, -1));
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("lovely");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("lovely", new Pair(2, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(6, -4));
 
 		s = "not a really good day";
 		sentimentScore = sentiHandler.getSentimentScore(s, EN);
-		assertThat(sentimentScore.getSentiment()).isEqualTo(Sentiment.POS);
+		assertThat(sentimentScore.getSentiment()).isEqualTo(Sentiment.NEG);
 		wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
@@ -266,21 +253,15 @@ class SentimentTest {
 			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("really");
-			assertThat(wordScorePair.getScore()).isEqualTo(1);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(null);
+			isBooster("really", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("wonderful");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(3, -1));
+			isSentimentWord("wonderful", new Pair(3, -1));
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("lovely");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("lovely", new Pair(2, -1));
 		});
-		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(6, -4));
+		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -1));
 	}
 
 	@Test
@@ -297,14 +278,10 @@ class SentimentTest {
 			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("very");
-			assertThat(wordScorePair.getScore()).isEqualTo(1);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(null);
+			isBooster("very", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("good");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("good", new Pair(2, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -1));
 	}
@@ -323,14 +300,10 @@ class SentimentTest {
 			assertThat(wordScorePair.getNegation()).isEqualTo("negation");
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("very");
-			assertThat(wordScorePair.getScore()).isEqualTo(1);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(null);
+			isBooster("very", 1);
 		});
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("phenomenal");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(5, -1));
+			isSentimentWord("phenomenal", new Pair(5, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -1));
 	}
@@ -343,9 +316,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("good");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("good", new Pair(2, -1));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(3, -1));
 	}
@@ -358,9 +329,7 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("unfriendly");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(1, -3));
+			isSentimentWord("unfriendly", new Pair(1, -3));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(1, -4));
 	}
@@ -373,15 +342,11 @@ class SentimentTest {
 		ArrayList<WordScorePair> wordScorePairs = sentimentScore.getWordScorePairs();
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("Good");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(2, -1));
+			isSentimentWord("good", new Pair(2, -1));
 		});
 
 		assertThat(wordScorePairs).anySatisfy(wordScorePair -> {
-			assertThat(wordScorePair.getWord()).isEqualTo("unfriendly");
-			assertThat(wordScorePair.getScore()).isEqualTo(0);
-			assertThat(wordScorePair.getScorePair()).isEqualTo(new Pair(1, -3));
+			isSentimentWord("unfriendly", new Pair(1, -3));
 		});
 		assertThat(sentimentScore.getFinalScore()).isEqualTo(new Pair(3, -5));
 	}
