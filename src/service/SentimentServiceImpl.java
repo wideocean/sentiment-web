@@ -279,19 +279,19 @@ public class SentimentServiceImpl implements SentimentService {
 											// Taboada shift version
 											if (negateSentiment) {
 												if ((currentScore - 4) < 0) {
-//									    				scoreprints.add("\t["+currentScore+",-1] -> "+"[1,"+(currentScore-4)+"]\n");
+//									    			scoreprints.add("\t["+currentScore+",-1] -> "+"[1,"+(currentScore-4)+"]\n");
 													tempNegScore = tempNegScore + (currentScore - 4);
 													tempPosScore++;
 													lastSentimentPositive = false;
 													negDetected = true;
 												} else if ((currentScore - 4) == 0) {
-//									    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
+//									    			scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
 													tempPosScore = currentScore - 4;
 													tempNegScore--;
 													lastSentimentPositive = false;
 													negDetected = true;
 												} else {
-//									    				scoreprints.add("\t["+currentScore+",-1] -> "+"["+(currentScore-4)+",-1]\n");
+//													scoreprints.add("\t[" + currentScore + ",-1] -> " + "["+ (currentScore - 4) + ",-1]\n");
 													tempPosScore = tempPosScore + (currentScore - 4);
 													tempNegScore--;
 													lastSentimentPositive = false;
