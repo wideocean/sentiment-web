@@ -32,13 +32,9 @@ public class WordScorePair {
 	private float score;
 
 	@JsonInclude(JsonInclude.Include.NON_NULL)
-	private boolean negation;
+	private Boolean negation;
 
-	public WordScorePair(String word, Pair scorePair, float score, boolean negation) {
-		this.word = word;
-		this.scorePair = scorePair;
-		this.score = score;
-		this.negation = negation;
+	public WordScorePair() {
 	}
 
 	public WordScorePair(String word, Pair scorePair) {
@@ -51,7 +47,7 @@ public class WordScorePair {
 		this.score = score;
 	}
 
-	public WordScorePair(String word, boolean negation) {
+	public WordScorePair(String word, Boolean negation) {
 		this.word = word;
 		this.negation = negation;
 	}
@@ -80,11 +76,11 @@ public class WordScorePair {
 		this.score = score;
 	}
 
-	public boolean getNegation() {
+	public Boolean getNegation() {
 		return negation;
 	}
 
-	public void setNegation(boolean negation) {
+	public void setNegation(Boolean negation) {
 		this.negation = negation;
 	}
 
