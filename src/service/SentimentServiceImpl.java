@@ -428,11 +428,11 @@ public class SentimentServiceImpl implements SentimentService {
 		float absolutetextNeg = Math.abs(textScore.getNegative());
 
 		Sentiment result = null;
-		// if POS and NEG is detected together and its difference is <= 1, then
+		// if POS and NEG is detected together and its difference is <= 0.5, then
 		// consider it as neutral (NEU)
 		if (posDetected && negDetected) {
 			float difference = Math.abs(absolutetextPos - absolutetextNeg);
-			if (difference <= 1) {
+			if (difference <= 0.5) {
 				System.out.println("NEUTRAL" + "\t" + textScore.toString());
 				result = Sentiment.NEU;
 			} else if (absolutetextPos > absolutetextNeg) {
