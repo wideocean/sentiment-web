@@ -2,6 +2,8 @@ package model;
 
 import java.util.Objects;
 
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
 /**
  * Data Structure for storing Sentiment Scores. Stores a positive and a negative
  * value.
@@ -9,43 +11,44 @@ import java.util.Objects;
  * @author Pazifik
  *
  */
+@JsonPropertyOrder({ "positive", "negative" })
 public class Score {
 
-	private float pos;
-	private float neg;
+	private float positive;
+	private float negative;
 
 	public Score() {
 	}
 
 	public Score(float pos, float neg) {
-		this.pos = pos;
-		this.neg = neg;
+		this.positive = pos;
+		this.negative = neg;
 	}
 
 	public float getPositive() {
-		return pos;
+		return positive;
 	}
 
 	public float getNegative() {
-		return neg;
+		return negative;
 	}
 
 	public void setPositive(float pos) {
-		this.pos = pos;
+		this.positive = pos;
 	}
 
 	public void setNegative(float neg) {
-		this.neg = neg;
+		this.negative = neg;
 	}
 
 	@Override
 	public String toString() {
-		return "Score [pos=" + pos + ", neg=" + neg + "]";
+		return "Score [pos=" + positive + ", neg=" + negative + "]";
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(neg, pos);
+		return Objects.hash(negative, positive);
 	}
 
 	@Override
@@ -57,8 +60,8 @@ public class Score {
 		if (getClass() != obj.getClass())
 			return false;
 		Score other = (Score) obj;
-		return Float.floatToIntBits(neg) == Float.floatToIntBits(other.neg)
-				&& Float.floatToIntBits(pos) == Float.floatToIntBits(other.pos);
+		return Float.floatToIntBits(negative) == Float.floatToIntBits(other.negative)
+				&& Float.floatToIntBits(positive) == Float.floatToIntBits(other.positive);
 	}
 
 }
