@@ -1,14 +1,17 @@
 package facade;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.ServletContext;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,12 +37,14 @@ public class SentimentResource {
 	private final ObjectMapper mapper = new ObjectMapper();
 
 	@GET
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSentiment(@QueryParam("text") String text) {
 		if (text == null || text.equals(""))
 			return Response.status(400).entity("Invalid Request: no text provided").build();
 
 		String absoluteDiskPath = servletContext.getRealPath("");
 		String result = "";
+		List<SentimentResult> results = new ArrayList<SentimentResult>();
 		try {
 			languageService = new LanguageServiceImpl();
 			sentimentService = new SentimentServiceImpl(absoluteDiskPath);
@@ -56,8 +61,9 @@ public class SentimentResource {
 
 				SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, null);
 
-				result = mapper.writeValueAsString(sentimentResult);
+				results.add(sentimentResult);
 			}
+			result = mapper.writeValueAsString(results);
 
 		} catch (IOException e1) {
 			e1.printStackTrace();
@@ -70,12 +76,14 @@ public class SentimentResource {
 
 	@GET
 	@Path("/keywords")
+	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSentimentKeywords(@QueryParam("text") String text) {
 		if (text == null || text.equals(""))
 			return Response.status(400).entity("Invalid Request: no text provided").build();
 
 		String absoluteDiskPath = servletContext.getRealPath("");
 		String result = "";
+		List<SentimentResult> results = new ArrayList<SentimentResult>();
 		try {
 			languageService = new LanguageServiceImpl();
 			sentimentService = new SentimentServiceImpl(absoluteDiskPath);
@@ -95,8 +103,9 @@ public class SentimentResource {
 
 				SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, keywords);
 
-				result = mapper.writeValueAsString(sentimentResult);
+				results.add(sentimentResult);
 			}
+			result = mapper.writeValueAsString(results);
 
 		} catch (IOException e1) {
 			e1.printStackTrace();

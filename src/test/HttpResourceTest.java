@@ -9,6 +9,7 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -44,10 +45,13 @@ class HttpResourceTest {
 		String result = response.readEntity(String.class);
 		System.out.println("Result: " + result);
 
-		SentimentResult sentimentResult = mapper.readValue(result, SentimentResult.class);
-		assertThat(sentimentResult.getLineNumber()).isEqualTo(1);
-		assertThat(sentimentResult.getLang()).isEqualTo(EN);
-		assertThat(sentimentResult.getSentiment()).isEqualTo(Sentiment.POS);
+		List<Object> sentimentResults = Arrays.asList(mapper.readValue(result, SentimentResult[].class));
+		for (Object obj : sentimentResults) {
+			SentimentResult sentimentResult = (SentimentResult) obj;
+			assertThat(sentimentResult.getLineNumber()).isEqualTo(1);
+			assertThat(sentimentResult.getLang()).isEqualTo(EN);
+			assertThat(sentimentResult.getSentiment()).isEqualTo(Sentiment.POS);
+		}
 	}
 
 	@Test
@@ -64,23 +68,27 @@ class HttpResourceTest {
 		String result = response.readEntity(String.class);
 		System.out.println("Result: " + result);
 
-		SentimentResult sentimentResult = mapper.readValue(result, SentimentResult.class);
-		assertThat(sentimentResult.getLineNumber()).isEqualTo(1);
-		assertThat(sentimentResult.getLang()).isEqualTo(EN);
-		assertThat(sentimentResult.getSentiment()).isEqualTo(Sentiment.NEG);
-		List<WordScore> keywords = sentimentResult.getKeywords();
-		assertThat(keywords).anySatisfy(wordScore -> {
-			assertThat(wordScore.getWord()).isEqualTo("not");
-			assertThat(wordScore.getNegation()).isTrue();
-		});
-		assertThat(keywords).anySatisfy(wordScore -> {
-			assertThat(wordScore.getWord()).isEqualTo("very");
-			assertThat(wordScore.getBoosterScore()).isEqualTo(1);
-		});
-		assertThat(keywords).anySatisfy(wordScore -> {
-			assertThat(wordScore.getWord()).isEqualTo("good");
-			assertThat(wordScore.getScore()).isEqualTo(new Score(2, -1));
-		});
+		List<Object> sentimentResults = Arrays.asList(mapper.readValue(result, SentimentResult[].class));
+		for (Object obj : sentimentResults) {
+			SentimentResult sentimentResult = (SentimentResult) obj;
+			assertThat(sentimentResult.getLineNumber()).isEqualTo(1);
+			assertThat(sentimentResult.getLang()).isEqualTo(EN);
+			assertThat(sentimentResult.getSentiment()).isEqualTo(Sentiment.NEG);
+			List<WordScore> keywords = sentimentResult.getKeywords();
+			assertThat(keywords).anySatisfy(wordScore -> {
+				assertThat(wordScore.getWord()).isEqualTo("not");
+				assertThat(wordScore.getNegation()).isTrue();
+			});
+			assertThat(keywords).anySatisfy(wordScore -> {
+				assertThat(wordScore.getWord()).isEqualTo("very");
+				assertThat(wordScore.getBoosterScore()).isEqualTo(1);
+			});
+			assertThat(keywords).anySatisfy(wordScore -> {
+				assertThat(wordScore.getWord()).isEqualTo("good");
+				assertThat(wordScore.getScore()).isEqualTo(new Score(2, -1));
+			});
+		}
+
 	}
 
 	@Test
