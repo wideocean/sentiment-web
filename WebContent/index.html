@@ -3,52 +3,41 @@
 <html>
 <head>
 <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
-<title> Airbnb Sentiment Analysis </title>
+<title> Sentiment Analysis </title>
 </head>
 <body>
 
-<h2>Sentiment Detection DEMO Request Handling</h2>
+<h2>Sentiment Detection Demo</h2>
 
-
-<h3>Sentiment Servlet</h3>
+<div>
 <p>Request URL:</p>
-<div>/sentiment-web/<span style="color:red">detectSentiment</span>?<b>reviewtext</b>=&<b>keywords</b>=false</div>
-<p><u>Parameters</u></p>
-- <b>reviewtext</b> (String)
-<br>
-The text to be analysed
-<br><br>
-- <b>keywords</b> (true/false)
-<br>
-true = overall sentiment + all detected sentiment words including their scores
-<br>
-false = overall sentiment
-<br><br>
-DEMO
-<br>
-<form action="/sentiment-web/sentiment" method="get" accept-charset="UTF-8">
+/sentiment-web/api/<span style="color:red">sentiment</span>?<b>text</b>=</div>
+<div>
+<p>Parameters</p>
+- <b>text</b> (String): The text to be analyzed
+</div>
+<div>
+<p>DEMO</p>
+<form action="/sentiment-web/api/sentiment" method="get" accept-charset="UTF-8">
 <textarea rows="10" cols="80" name="text" placeholder="1 review per line"></textarea>
-<input type="radio" name="keywords" value="true"> true
-<input type="radio" name="keywords" value="false" checked> false
-<input type="submit" name="submit" value="detectSentiment">
+<input type="submit" name="submit" value="Analyze">
 </form>
+</div>
 
-
-<br>
-<h3>LanguageServlet</h3>
+<div>
 <p>Request URL:</p>
-<div>/sentiment-web/<span style="color:red">detectLanguage</span>?<b>text</b>=</div>
-<p><u>Parameters</u></p>
-- <b>text</b> (String)
-<br>
-The text to be analysed
-<br><br>
-<form action="/sentiment-web/detectLanguage" method="post" accept-charset="UTF-8">
-<input type="text" name="text" placeholder="Type text here">
-<input type="submit" name="submit" value="detectLanguage">
+/sentiment-web/api/<span style="color:red">sentiment/keywords</span>?<b>text</b>=</div>
+<div>
+<p>Parameters</p>
+- <b>text</b> (String): The text to be analyzed
+</div>
+<div>
+<p>DEMO</p>
+<form action="/sentiment-web/api/sentiment/keywords" method="get" accept-charset="UTF-8">
+<textarea rows="10" cols="80" name="text" placeholder="1 review per line"></textarea>
+<input type="submit" name="submit" value="Analyze">
 </form>
-
-
+</div>
 
 </body>
 </html>
