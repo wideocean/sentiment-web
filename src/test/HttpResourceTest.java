@@ -27,7 +27,7 @@ import model.WordScore;
  *
  */
 class HttpResourceTest {
-	private final String URL = "http://localhost:8080/sentiment-web";
+	private final String URL = "http://localhost:8080/sentiment-web/api";
 	private final String EN = "en";
 	private ObjectMapper mapper = new ObjectMapper();
 
