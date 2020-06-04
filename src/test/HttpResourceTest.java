@@ -51,6 +51,7 @@ class HttpResourceTest {
 			assertThat(sentimentResult.getLineNumber()).isEqualTo(1);
 			assertThat(sentimentResult.getLang()).isEqualTo(EN);
 			assertThat(sentimentResult.getSentiment()).isEqualTo(Sentiment.POS);
+			assertThat(sentimentResult.getKeywords()).isNull();
 		}
 	}
 
