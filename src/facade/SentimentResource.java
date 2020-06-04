@@ -39,30 +39,13 @@ public class SentimentResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSentiment(@QueryParam("text") String text) {
-		if (text == null || text.equals(""))
-			return Response.status(400).entity("Invalid Request: no text provided").build();
-
-		String absoluteDiskPath = servletContext.getRealPath("");
 		String result = "";
-		List<SentimentResult> results = new ArrayList<SentimentResult>();
 		try {
-			languageService = new LanguageServiceImpl();
-			sentimentService = new SentimentServiceImpl(absoluteDiskPath);
+			List<SentimentResult> results = getSentiment(text, false);
 
-			String[] reviews = text.split("\\n");
-			int lineNumber = 0;
+			if (results == null)
+				return Response.status(400).entity("Invalid Request: no text provided").build();
 
-			for (String e : reviews) {
-				lineNumber++;
-				String lang = languageService.getLanguage(e);
-				Sentiment sentiment;
-
-				sentiment = sentimentService.getSentimentScore(e, lang).getSentiment();
-
-				SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, null);
-
-				results.add(sentimentResult);
-			}
 			result = mapper.writeValueAsString(results);
 
 		} catch (IOException e1) {
@@ -78,33 +61,13 @@ public class SentimentResource {
 	@Path("/keywords")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getSentimentKeywords(@QueryParam("text") String text) {
-		if (text == null || text.equals(""))
-			return Response.status(400).entity("Invalid Request: no text provided").build();
-
-		String absoluteDiskPath = servletContext.getRealPath("");
 		String result = "";
-		List<SentimentResult> results = new ArrayList<SentimentResult>();
 		try {
-			languageService = new LanguageServiceImpl();
-			sentimentService = new SentimentServiceImpl(absoluteDiskPath);
+			List<SentimentResult> results = getSentiment(text, true);
 
-			String[] reviews = text.split("\\n");
-			int lineNumber = 0;
+			if (results == null)
+				return Response.status(400).entity("Invalid Request: no text provided").build();
 
-			for (String e : reviews) {
-				lineNumber++;
-				String lang = languageService.getLanguage(e);
-				SentimentScore swsp;
-
-				swsp = sentimentService.getSentimentScore(e, lang);
-
-				Sentiment sentiment = swsp.getSentiment();
-				List<WordScore> keywords = swsp.getWordScorePairs();
-
-				SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, keywords);
-
-				results.add(sentimentResult);
-			}
 			result = mapper.writeValueAsString(results);
 
 		} catch (IOException e1) {
@@ -114,6 +77,37 @@ public class SentimentResource {
 		}
 
 		return Response.status(200).entity(result).build();
+	}
+
+	private List<SentimentResult> getSentiment(String text, boolean withKeywords) throws IOException {
+		if (text == null || text.equals(""))
+			return null;
+		String absoluteDiskPath = servletContext.getRealPath("");
+		List<SentimentResult> results = new ArrayList<SentimentResult>();
+
+		languageService = new LanguageServiceImpl();
+		sentimentService = new SentimentServiceImpl(absoluteDiskPath);
+
+		String[] reviews = text.split("\\n");
+		int lineNumber = 0;
+
+		for (String e : reviews) {
+			lineNumber++;
+			String lang = languageService.getLanguage(e);
+			SentimentScore swsp;
+
+			swsp = sentimentService.getSentimentScore(e, lang);
+
+			Sentiment sentiment = swsp.getSentiment();
+			List<WordScore> keywords = swsp.getWordScorePairs();
+
+			SentimentResult sentimentResult = new SentimentResult(lineNumber, sentiment, lang, null);
+			if (withKeywords)
+				sentimentResult.setKeywords(keywords);
+
+			results.add(sentimentResult);
+		}
+		return results;
 	}
 
 }
